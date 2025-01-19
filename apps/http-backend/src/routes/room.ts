@@ -1,19 +1,14 @@
-import { CreateRoomSchema } from "@repo/common/types";
+import { AuthReqProps } from "@repo/common/types";
 import { Router } from "express";
 
 const router: Router = Router();
 
-router.post("/room", (req, res) => {
-  const data = CreateRoomSchema.safeParse(req.body);
-  if (!data.success) {
-    res.json({
-      message: "Incorrect inputs",
-    });
-    return;
-  }
-  // db call
+router.post("/room", (req: AuthReqProps, res) => {
+  const userId = req.userId;
 
-  res.json({
-    roomId: 123,
-  });
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+  }
 });
+
+export const useRoom: Router = router;

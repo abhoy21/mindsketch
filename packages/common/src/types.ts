@@ -1,13 +1,7 @@
 import { z } from "zod";
 
 export const SignUpSchema = z.object({
-  username: z
-    .string()
-    .min(3, "username must be at least 3 characters long")
-    .regex(
-      /^[a-zA-Z0-9_]+$/,
-      "username can only contain letters, numbers, and underscores",
-    ),
+  name: z.string().min(5).max(20),
   email: z.string().email("Invalid email"),
   password: z
     .string()
@@ -32,3 +26,8 @@ export const SignInSchema = z.object({
 export const CreateRoomSchema = z.object({
   name: z.string().min(3).max(20),
 });
+
+export interface AuthReqProps extends Request {
+  token?: string;
+  userId?: string;
+}

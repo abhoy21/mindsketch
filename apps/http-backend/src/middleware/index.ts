@@ -1,18 +1,15 @@
 import { JWT_SECRET } from "@repo/backend-common/config";
-import { NextFunction, Request, Response } from "express";
+import { AuthReqProps } from "@repo/common/types";
+import { NextFunction, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-export interface AuthReqProps extends Request {
-  token?: string;
-  userId?: number;
-}
 export async function middleware(
   req: AuthReqProps,
   res: Response,
   next: NextFunction,
 ) {
   try {
-    const token = req.headers["authorization"] ?? "";
+    const token = req.headers.get("Authorization") ?? "";
 
     await jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) {
