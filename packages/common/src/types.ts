@@ -26,8 +26,3 @@ export const SignInSchema = z.object({
 export const CreateRoomSchema = z.object({
   name: z.string().min(3).max(20),
 });
-
-export interface AuthReqProps extends Request {
-  token?: string;
-  userId?: string;
-}

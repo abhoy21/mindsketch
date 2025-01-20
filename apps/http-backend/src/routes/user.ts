@@ -2,12 +2,12 @@ import { JWT_SECRET } from "@repo/backend-common/config";
 import { SignInSchema, SignUpSchema } from "@repo/common/types";
 import { prisma } from "@repo/db/client";
 import bcrypt from "bcrypt";
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import jwt from "jsonwebtoken";
 
 const router: Router = Router();
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", async (req: Request, res: Response) => {
   try {
     const validation = SignUpSchema.safeParse(req.body);
 
@@ -54,7 +54,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("/signin", async (req, res) => {
+router.post("/signin", async (req: Request, res: Response) => {
   try {
     const validation = SignInSchema.safeParse(req.body);
 
