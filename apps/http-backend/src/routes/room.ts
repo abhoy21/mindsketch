@@ -86,7 +86,6 @@ router.get("/chats/:roomId", async (req: ChatProps, res: Response) => {
     const chats = await prisma.chat.findMany({
       where: {
         roomId: roomId.id,
-        userId: userId,
       },
       orderBy: {
         id: "desc",
