@@ -1,16 +1,52 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SignInSchema, SignUpSchema } from "@repo/common/types";
 import Button from "@repo/ui/button";
 import Input from "@repo/ui/input";
+import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { HTTP_BACKEND_URL } from "../config";
 import Logo from "./logo";
 
+type SignInProps = z.infer<typeof SignInSchema>;
+type SignUpProps = z.infer<typeof SignUpSchema>;
+
 export default function AuthPage({ isSignin }: { isSignin: boolean }) {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+    reset,
+  } = useForm<SignInProps | SignUpProps>({
+    resolver: zodResolver(isSignin ? SignInSchema : SignUpSchema),
+  });
+
+  const onSubmit = async (data: SignInProps | SignUpProps) => {
+    try {
+      const response = await axios.post(
+        `${HTTP_BACKEND_URL}/api/v1/auth/${isSignin ? "signin" : "signup"}`,
+        data,
+      );
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        router.push("/room");
+      }
+      reset();
+    } catch (error) {
+      console.log(error);
+      reset();
+    }
+  };
   return (
     <div className='bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-900 w-screen h-screen flex items-center justify-center'>
-      <div className='p-9 m-2 bg-[#2d2d2d] rounded-xl w-full max-w-md'>
+      <div className='p-9 m-2 bg-gradient-to-br from-neutral-950 to-neutral-900 border border-amethyst-500/45 rounded-xl w-full max-w-md'>
         <div className='flex flex-col items-start'>
           <Logo />
           <h1 className='text-2xl font-semibold text-amethyst-200'>Welcome!</h1>
@@ -18,16 +54,18 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
             Start Creating Amazing Diagrams.
           </p>
         </div>
-        <div className='space-y-4'>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
           {!isSignin && (
-            <div className='flex items-center justify-between gap-2'>
-              <Input placeholder='First Name' type='text' />
-              <Input placeholder='Last Name' type='text' />
-            </div>
+            <Input {...register("name")} placeholder='Name' type='text' />
           )}
-          <Input placeholder='Enter your email' type='text' />
+          <Input
+            {...register("email")}
+            placeholder='Enter your email'
+            type='text'
+          />
           <div className='relative'>
             <Input
+              {...register("password")}
               placeholder='Enter your password'
               type={showPassword ? "text" : "password"}
             />
@@ -72,27 +110,32 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
               )}
             </div>
           </div>
-          <Button className='w-full'>{isSignin ? "Sign In" : "Sign Up"}</Button>
+          <Button disabled={isSubmitting} className='w-full'>
+            {isSubmitting && (
+              <span className='spinner-border spinner-border-sm mr-1'></span>
+            )}
+            {isSignin ? "Sign In" : "Sign Up"}
+          </Button>
 
           <p className='text-gray-400'>
             Don&apos;t have an account?{" "}
             {isSignin ? (
               <Link
                 href='/auth/signup'
-                className='text-royal-blue-300 hover:text-amethyst-400 transition-colors'
+                className='text-amethyst-300 hover:text-royal-blue-400 transition-colors'
               >
                 Sign up
               </Link>
             ) : (
               <Link
                 href='/auth/signin'
-                className='text-royal-blue-300 hover:text-amethyst-400 transition-colors'
+                className='text-royal-amethyst-300 hover:text-royal-blue-400 transition-colors'
               >
                 Sign in
               </Link>
             )}
           </p>
-        </div>
+        </form>
       </div>
     </div>
   );

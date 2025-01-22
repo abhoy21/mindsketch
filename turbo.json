@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-   "globalDependencies": ["**/.env",  "DATABASE_URL"],
+   "globalDependencies": ["**/.env",  "DATABASE_URL", "JWT_SECRET", "HTTP_URL", "WS_URL"],
   "ui": "tui",
   "tasks": {
     "build": {
@@ -20,6 +20,8 @@
     }
   },
   "globalEnv": [
-    "JWT_SECRET"
+    "JWT_SECRET",
+    "HTTP_URL",
+    "WS_URL"
   ]
 }
