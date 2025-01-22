@@ -1,4 +1,5 @@
-import { Button } from "@repo/ui/button";
+import Button from "@repo/ui/button";
+import Link from "next/link";
 
 export default function Reminder(): React.JSX.Element {
   return (
@@ -20,11 +21,13 @@ export default function Reminder(): React.JSX.Element {
           </div>
 
           <div className='flex flex-col sm:flex-row gap-4'>
-            <Button variant='primary' size='lg'>
-              Start For Free
-            </Button>
+            <Link href='/auth/signin'>
+              <Button variant='primary' size='lg'>
+                Start For Free
+              </Button>
+            </Link>
             <Button variant='outline' size='lg'>
-              Schedule Demo
+              Have a Demo
             </Button>
           </div>
         </div>

@@ -15,7 +15,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   disabled?: boolean;
 }
 
-export const Button = ({
+export default function Button({
   children,
   className = "",
   variant = "primary",
@@ -23,7 +23,7 @@ export const Button = ({
   isLoading = false,
   disabled = false,
   ...props
-}: ButtonProps) => {
+}: ButtonProps): React.JSX.Element {
   const baseStyles =
     "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-colors duration-150 ease-in-out  disabled:cursor-not-allowed whitespace-nowrap";
 
@@ -120,4 +120,4 @@ export const Button = ({
       )}
     </button>
   );
-};
+}

@@ -1,4 +1,5 @@
-import { Button } from "@repo/ui/button";
+import Button from "@repo/ui/button";
+import Link from "next/link";
 
 export default function WorkingSection(): React.JSX.Element {
   return (
@@ -6,7 +7,7 @@ export default function WorkingSection(): React.JSX.Element {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='text-center font-montserrat mb-16 md:mb-32'>
           <h2 className='text-3xl md:text-4xl font-bold text-amethyst-200 mb-4'>
-            How MindSketch Works
+            How MindSketch Works?
           </h2>
           <p className='text-gray-400 text-lg max-w-2xl mx-auto'>
             Get started with MindSketch in three simple steps
@@ -63,11 +64,11 @@ export default function WorkingSection(): React.JSX.Element {
                 <div className='bg-gradient-to-br from-neutral-950 to-neutral-900 p-6 rounded-xl border border-amethyst-900 hover:border-royal-blue-500/50 transition-all duration-300 shadow-lg hover:shadow-royal-blue-500/20'>
                   <h3 className='text-2xl font-semibold text-white mb-3'>
                     {" "}
-                    Create Your Workspace
+                    Collaborate & Share
                   </h3>
                   <p className='text-gray-400'>
-                    Sign up and create your personal workspace in seconds. No
-                    complex setup required.
+                    Invite team members to collaborate in real-time or share
+                    your diagrams with a single link.
                   </p>
                 </div>
               </div>
@@ -81,9 +82,11 @@ export default function WorkingSection(): React.JSX.Element {
         </div>
 
         <div className='text-center mt-16 md:mt-32'>
-          <Button variant='primary' size='lg'>
-            Start Creating Now
-          </Button>
+          <Link href='/auth/signin'>
+            <Button variant='primary' size='lg'>
+              Start Creating Now
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

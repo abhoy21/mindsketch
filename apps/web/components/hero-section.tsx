@@ -1,4 +1,5 @@
-import { Button } from "@repo/ui/button";
+import Button from "@repo/ui/button";
+import Link from "next/link";
 
 export default function Hero(): React.JSX.Element {
   return (
@@ -30,28 +31,30 @@ export default function Hero(): React.JSX.Element {
             </div>
 
             <div className='flex flex-col sm:flex-row gap-6'>
-              <Button
-                variant='primary'
-                size='lg'
-                className='hover:translaye-y-[-2px] shadow-amethyst-500/25 shadow-lg'
-              >
-                Get Started Now
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  className='h-5 w-5 inline-block ml-2 group-hover:translate-x-1 transition-transform'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
+              <Link href='/auth/signup'>
+                <Button
+                  variant='primary'
+                  size='lg'
+                  className='hover:translaye-y-[-2px] shadow-amethyst-500/25 shadow-lg'
                 >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth='2'
-                    d='M13 7l5 5m0 0l-5 5m5-5H6'
-                    id='el-qpvcrwmw'
-                  ></path>
-                </svg>
-              </Button>
+                  Get Started Now
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='h-5 w-5 inline-block ml-2 group-hover:translate-x-1 transition-transform'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth='2'
+                      d='M13 7l5 5m0 0l-5 5m5-5H6'
+                      id='el-qpvcrwmw'
+                    ></path>
+                  </svg>
+                </Button>
+              </Link>
               <Button variant='outline' size='lg' className='shadow-lg'>
                 Watch Demo
               </Button>
