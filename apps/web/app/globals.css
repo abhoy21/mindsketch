@@ -1,3 +1,45 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.net-pattern {
+  background-image: radial-gradient(
+    circle at center,
+    #636363 0.5px,
+    transparent 0.75px
+  );
+  background-size: 8px 8px;
+}
+
+.net-pattern-dark {
+  background-image: radial-gradient(
+    circle at center,
+    #3d0050 0.5px,
+    transparent 1px
+  );
+  background-size: 8px 8px;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #171717;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #591c877c;
+    border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #312e81;
+}
+
+

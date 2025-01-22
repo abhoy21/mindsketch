@@ -29,15 +29,15 @@ export const Button = ({
 
   const variantStyles: Record<Variants, string> = {
     primary: `
-      bg-gradient-to-br from-amethyst-500 to-amethyst-800 
+      bg-gradient-to-r from-royal-blue-600 to-amethyst-600 
       text-white 
-      hover:bg-gradient-to-r hover:from-amethyst-500 hover:to-amethyst-700 hover:scale-105 transition-all
+      hover:bg-gradient-to-r hover:from-amethyst-500 hover:to-royal-blue-500 hover:scale-105 transition-all
       duration-300 ease-in-out
       disabled:bg-amethyst-100
     `,
     secondary: `
-     bg-gradient-to-br from-amethyst-200 to-amethyst-400 
-      text-amethyst-700 
+     bg-gradient-to-br from-royal-blue-400 to-amethyst-400 
+      text-amethyst-200 
       hover:bg-amethyst-200 hover:scale-105   
       transition-all
       duration-300 ease-in-out
@@ -45,17 +45,17 @@ export const Button = ({
       disabled:text-amethyst-300
     `,
     outline: `
-      border-2 
-      border-amethyst-600 
-      text-amethyst-600 
-      hover:bg-amethyst-50  hover:scale-105   
+      border 
+      border-amethyst-800 
+      text-amethyst-100 backdrop-blur-sm
+      hover:bg-amethyst-50/10  hover:scale-105   
       transition-all
       duration-300 ease-in-out
       disabled:border-amethyst-200 
       disabled:text-amethyst-200
     `,
     ghost: `
-      bg-gradient-to-r from-amethyst-400 to-amethyst-800 text-transparent bg-clip-text
+      bg-gradient-to-r from-royal-blue-400 to-amethyst-400 text-transparent bg-clip-text
       hover:bg-amethyst-50 hover:scale-105
       transition-all
       duration-300 ease-in-out      
