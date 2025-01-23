@@ -7,28 +7,33 @@ import Input from "@repo/ui/input";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { HTTP_BACKEND_URL } from "../config";
 import Logo from "./logo";
 
-type SignInProps = z.infer<typeof SignInSchema>;
-type SignUpProps = z.infer<typeof SignUpSchema>;
+type signInType = z.infer<typeof SignInSchema>;
+type signUpType = z.infer<typeof SignUpSchema>;
 
 export default function AuthPage({ isSignin }: { isSignin: boolean }) {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const showPasswordRef = useRef(false);
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isValid, errors, isSubmitting },
     reset,
-  } = useForm<SignInProps | SignUpProps>({
+  } = useForm<signInType | signUpType>({
     resolver: zodResolver(isSignin ? SignInSchema : SignUpSchema),
+    mode: "onChange",
   });
 
-  const onSubmit = async (data: SignInProps | SignUpProps) => {
+  const togglePasswordVisibility = () => {
+    showPasswordRef.current = !showPasswordRef.current;
+  };
+
+  const onSubmit = async (data: signInType | signUpType) => {
     try {
       const response = await axios.post(
         `${HTTP_BACKEND_URL}/api/v1/auth/${isSignin ? "signin" : "signup"}`,
@@ -44,6 +49,7 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
       reset();
     }
   };
+
   return (
     <div className='bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-900 w-screen h-screen flex items-center justify-center'>
       <div className='p-9 m-2 bg-gradient-to-br from-neutral-950 to-neutral-900 border border-amethyst-500/45 rounded-xl w-full max-w-md'>
@@ -62,18 +68,23 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
             {...register("email")}
             placeholder='Enter your email'
             type='text'
+            className={errors.email ? "border-red-500" : ""}
           />
+          {errors.email && (
+            <p className='text-red-500 text-sm mt-1'>{errors.email.message}</p>
+          )}
           <div className='relative'>
             <Input
               {...register("password")}
               placeholder='Enter your password'
-              type={showPassword ? "text" : "password"}
+              type={showPasswordRef.current ? "text" : "password"}
+              className={errors.password ? "border-red-500" : ""}
             />
             <div className='absolute right-4 bottom-0 -translate-y-1/2 text-gray-400 hover:text-royal-blue-700 transition-colors'>
-              {showPassword ? (
+              {showPasswordRef.current ? (
                 <div
                   role='button'
-                  onClick={() => setShowPassword(false)}
+                  onClick={togglePasswordVisibility}
                   className='h-6 w-6'
                 >
                   <svg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'>
@@ -92,7 +103,7 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
               ) : (
                 <div
                   role='button'
-                  onClick={() => setShowPassword(true)}
+                  onClick={togglePasswordVisibility}
                   className='h-6 w-6'
                 >
                   <svg
@@ -109,8 +120,13 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
                 </div>
               )}
             </div>
+            {errors.password && (
+              <p className='text-red-500 text-sm mt-1'>
+                {errors.password.message}
+              </p>
+            )}
           </div>
-          <Button disabled={isSubmitting} className='w-full'>
+          <Button disabled={!isValid || isSubmitting} className='w-full'>
             {isSubmitting && (
               <span className='spinner-border spinner-border-sm mr-1'></span>
             )}
@@ -129,7 +145,7 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
             ) : (
               <Link
                 href='/auth/signin'
-                className='text-royal-amethyst-300 hover:text-royal-blue-400 transition-colors'
+                className='text-amethyst-300 hover:text-royal-blue-400 transition-colors'
               >
                 Sign in
               </Link>

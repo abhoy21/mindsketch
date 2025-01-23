@@ -7,7 +7,7 @@ export function Redirect() {
   const router = useRouter();
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      router.push("/room");
+      router.push("/room/join");
     }
   }, [router]);
 

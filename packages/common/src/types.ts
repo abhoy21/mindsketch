@@ -24,5 +24,16 @@ export const SignInSchema = z.object({
 });
 
 export const CreateRoomSchema = z.object({
-  name: z.string().min(3).max(20),
+  name: z
+    .string()
+    .min(3, "Name must be at least 3 characters long")
+    .max(20, "Name must not exceed 20 characters")
+    .regex(
+      /^[a-zA-Z0-9\-_@]{1,}$/,
+      'Only letters, numbers, "_", "-", and "@" are allowed',
+    ),
+});
+
+export const JoinRoomSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters long"),
 });
