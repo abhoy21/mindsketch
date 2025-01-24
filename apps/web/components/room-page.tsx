@@ -14,7 +14,7 @@ import Logo from "./logo";
 type createRoomType = z.infer<typeof CreateRoomSchema>;
 type joinRoomType = z.infer<typeof JoinRoomSchema>;
 
-export default function RoomPage({
+export default function CommonRoomPage({
   isCreate,
 }: {
   isCreate: boolean;
@@ -48,6 +48,8 @@ export default function RoomPage({
         } else {
           await axios;
         }
+      } else {
+        router.push(`/canvas/${data.name}`);
       }
     } catch (error) {
       console.log(error);

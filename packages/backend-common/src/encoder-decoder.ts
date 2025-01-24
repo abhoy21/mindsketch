@@ -12,11 +12,11 @@ export const encode = (data: DataProps): string => {
     { length: 6 },
     () => characters[Math.floor(Math.random() * characters.length)],
   ).join("");
-  return `${stringId}#-${random}#-${slug}`;
+  return `${stringId}/${random}/${slug}`;
 };
 
 export const decode = (data: string): DataProps => {
-  const [id, random, slug] = data.split("#-");
+  const [id, random, slug] = data.split("/");
   const integerId = parseInt(id as string);
   return {
     id: integerId as number,

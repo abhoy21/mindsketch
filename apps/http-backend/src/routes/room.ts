@@ -67,7 +67,7 @@ router.post("/room", async (req: RoomProps, res: Response) => {
   }
 });
 
-router.get("/chats/:roomId", async (req: ChatProps, res: Response) => {
+router.get("/chats/:roomId(*)", async (req: ChatProps, res: Response) => {
   try {
     const userId = req.userId;
 

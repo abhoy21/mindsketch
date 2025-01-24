@@ -87,6 +87,7 @@ wss.on("connection", function connection(ws, request) {
       }
     }
     if (parsedData.type === "chat") {
+      console.log("chat", parsedData);
       try {
         const user = users.find((u) => u.ws === ws && u.userId === userId);
         if (!user) {
@@ -120,7 +121,7 @@ wss.on("connection", function connection(ws, request) {
           try {
             u.ws.send(
               JSON.stringify({
-                type: "message",
+                type: "chat",
                 message: message,
                 roomId: roomId.id,
               }),

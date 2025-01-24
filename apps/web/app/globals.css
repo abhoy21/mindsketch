@@ -21,6 +21,15 @@
   background-size: 8px 8px;
 }
 
+.net-pattern-canvas {
+  background-image: radial-gradient(
+    circle at center,
+    #3b3b3b 0.45px,
+    transparent 1px
+  );
+  background-size: 28px 28px;
+}
+
 
 /* width */
 ::-webkit-scrollbar {
