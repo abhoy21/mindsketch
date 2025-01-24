@@ -56,10 +56,9 @@ export default function Button({
     `,
     ghost: `
       bg-gradient-to-r from-royal-blue-400 to-amethyst-400 text-transparent bg-clip-text
-      hover:bg-amethyst-50 hover:scale-105
+      hover:bg-[#31303b] hover:scale-105
       transition-all
       duration-300 ease-in-out      
-      disabled:text-amethyst-300
     `,
     danger: `
       bg-red-600 
@@ -75,7 +74,7 @@ export default function Button({
     sm: "px-3 py-1 text-sm w-24 h-10",
     md: "px-4 py-2 text-base w-36 h-12",
     lg: "px-6 py-2 text-lg h-14",
-    icon: "h-9 w-9 p-2",
+    icon: "h-10 w-10",
   };
 
   const loadingStyles = isLoading ? "opacity-80 cursor-wait" : "";

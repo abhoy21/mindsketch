@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import initDraw from "../draw";
+import { SelectedTool } from "@repo/common/types";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Game } from "../draw/game";
+import CanvasNavbar from "./canvas-navbar";
 
 export default function Canvas({
   roomId,
@@ -9,25 +11,59 @@ export default function Canvas({
   socket: WebSocket;
 }): React.JSX.Element {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvasWidth, setCanvasWidth] = useState<number>(0);
-  const [canvasHeight, setCanvasHeight] = useState<number>(0);
+  const [canvasWidth, canvasHeight] = useWindowSize();
+  const [selectedTool, setSelectedTool] = useState<SelectedTool>(
+    SelectedTool.Rectangle,
+  );
+
+  const [game, setGame] = useState<Game>();
 
   useEffect(() => {
-    setCanvasWidth(window.innerWidth);
-    setCanvasHeight(window.innerHeight);
+    game?.setTool(selectedTool);
+  }, [selectedTool, game]);
+
+  useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
+      canvas.width = canvasWidth as number;
+      canvas.height = canvasHeight as number;
 
-      initDraw(canvas, roomId, socket);
+      const g = new Game(canvas, roomId, socket);
+      setGame(g);
+
+      return () => {
+        g.destroy();
+      };
     }
-  }, [canvasRef, roomId, socket]);
+  }, [canvasRef, roomId, socket, canvasWidth, canvasHeight]);
 
   return (
-    <canvas
-      className='bg-[#121212] net-pattern-canvas'
-      ref={canvasRef}
-      width={canvasWidth}
-      height={canvasHeight}
-    ></canvas>
+    <>
+      <canvas
+        className='bg-[#121212] net-pattern-canvas'
+        ref={canvasRef}
+        width={canvasWidth}
+        height={canvasHeight}
+      ></canvas>
+      <div className='fixed top-2 left-0 right-0 bg-[#232329] max-w-md mx-auto rounded-md'>
+        <CanvasNavbar
+          selectedTool={selectedTool}
+          setSelectedTool={setSelectedTool}
+        />
+      </div>
+    </>
   );
+}
+
+function useWindowSize() {
+  const [size, setSize] = useState([0, 0]);
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight]);
+    }
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+  return size;
 }

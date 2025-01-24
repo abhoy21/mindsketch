@@ -21,6 +21,23 @@ export function RoomCanvas({ roomId }: { roomId: string }): React.JSX.Element {
       console.log(data);
       ws.send(data);
     };
+
+    ws.onerror = (error) => {
+      console.log("WebSocket error:", error);
+    };
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        const leaveData = JSON.stringify({
+          type: "leave",
+          roomId,
+        });
+        ws.send(leaveData);
+        ws.close();
+      }
+
+      setSocket(null);
+    };
   }, [roomId]);
 
   if (!socket) {

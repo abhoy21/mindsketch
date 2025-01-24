@@ -37,3 +37,47 @@ export const CreateRoomSchema = z.object({
 export const JoinRoomSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters long"),
 });
+
+export enum SelectedTool {
+  Rectangle = "Rectangle",
+  Ellipse = "Ellipse",
+  Diamond = "Diamond",
+  Text = "Text",
+  Arrow = "Arrow",
+  Line = "Line",
+  Pencil = "Pencil",
+  Eraser = "Eraser",
+}
+
+export type ShapeType =
+  | {
+      type: "rect";
+      startX: number;
+      startY: number;
+      width: number;
+      height: number;
+      color: string;
+    }
+  | {
+      type: "circle";
+      centerX: number;
+      centerY: number;
+      radius: number;
+      color: string;
+    }
+  | {
+      type: "line";
+      startX: number;
+      startY: number;
+      endX: number;
+      endY: number;
+      color: string;
+    }
+  | {
+      type: "text";
+      startX: number;
+      startY: number;
+      text: string;
+      color: string;
+    }
+  | { type: "none" };
