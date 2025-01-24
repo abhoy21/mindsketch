@@ -79,5 +79,6 @@ export type ShapeType =
       startY: number;
       text: string;
       color: string;
+      fontSize: number;
     }
   | { type: "none" };
