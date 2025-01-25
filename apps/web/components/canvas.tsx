@@ -19,6 +19,13 @@ export default function Canvas({
   const [game, setGame] = useState<Game>();
 
   useEffect(() => {
+    if (canvasRef.current) {
+      if (selectedTool === SelectedTool.Pointer) {
+        canvasRef.current.style.cursor = "default";
+      } else {
+        canvasRef.current.style.cursor = "crosshair";
+      }
+    }
     game?.setTool(selectedTool);
   }, [selectedTool, game]);
 

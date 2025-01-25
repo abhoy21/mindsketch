@@ -10,6 +10,27 @@ export default function CanvasNavbar({
 }): React.JSX.Element {
   return (
     <div className='flex space-x-2 items-center justify-center m-1'>
+      {/* Pointer */}
+      <Button
+        id='pointer'
+        variant='ghost'
+        size='icon'
+        onClick={() => setSelectedTool(SelectedTool.Pointer)}
+      >
+        {" "}
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          xmlSpace='preserve'
+          fill='#a7a7ac'
+          className={`${selectedTool === "Pointer" ? "bg-[#403e6a] text-white" : ""} hover:bg-[#31303b]  hover:scale-105 transition-all duration-300 ease-in-out rounded-md p-2`}
+          viewBox='0 0 1800 1800'
+        >
+          <g fill='#a7a7ac'>
+            <path d='m3.589 44.981 722.935 1734.396a31.666 31.666 0 0 0 29.212 19.473c.534 0 1.064-.017 1.603-.044a31.651 31.651 0 0 0 28.703-22.431l230.227-760.125 760.101-230.213a31.647 31.647 0 0 0 22.437-28.699 31.65 31.65 0 0 0-19.434-30.809L44.989 3.585C33.14-1.343 19.496 1.349 10.425 10.421a31.662 31.662 0 0 0-6.836 34.56zm88.027 46.625L1673.59 751.021 981.705 960.576a31.65 31.65 0 0 0-21.116 21.115l-209.565 691.907L91.616 91.606z' />
+            <path d='M699.044 1270.004a31.545 31.545 0 0 1-12.166 2.447c-12.396 0-24.165-7.33-29.229-19.483L425.565 696.183c-6.721-16.138.905-34.669 17.041-41.397 16.14-6.723 34.669.905 41.395 17.039l232.085 556.785c6.72 16.136-.906 34.673-17.042 41.394z' />
+          </g>
+        </svg>
+      </Button>
       {/* Rectangle */}
       <Button
         id='rectangle'

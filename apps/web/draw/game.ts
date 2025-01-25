@@ -12,9 +12,6 @@ export class Game {
   private startY: number;
   private selectedTool: SelectedTool = SelectedTool.Rectangle;
   private textInput: HTMLInputElement | null = null;
-  private painting: boolean = false;
-  private lastX: number = 0;
-  private lastY: number = 0;
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -49,7 +46,7 @@ export class Game {
 
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
-    console.log(this.existingShapes);
+
     this.displayCanvas();
   }
 
@@ -67,7 +64,7 @@ export class Game {
 
   displayCanvas() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
+    console.log(this.existingShapes);
     this.existingShapes.map((shape) => {
       if (shape.type === "rect") {
         this.ctx.strokeStyle = shape.color;
@@ -103,6 +100,10 @@ export class Game {
       } else if (shape.type === "arrow") {
         this.ctx.strokeStyle = shape.color;
         this.drawArrow(shape.startX, shape.startY, shape.endX, shape.endY);
+      } else if (shape.type === "diamond") {
+        this.ctx.strokeStyle = shape.color;
+        console.log(shape);
+        this.drawDiamond(shape.startX, shape.startY, shape.width, shape.height);
       }
     });
   }
@@ -204,6 +205,15 @@ export class Game {
           endY: e.clientY,
           color: "#fff",
         };
+      } else if (selectedTool === SelectedTool.Diamond) {
+        shape = {
+          type: "diamond",
+          startX: this.startX,
+          startY: this.startY,
+          width: width,
+          height: height,
+          color: "#fff",
+        };
       }
 
       this.existingShapes.push(shape as ShapeType);
@@ -242,6 +252,8 @@ export class Game {
         this.ctx.closePath();
       } else if (selectedTool === SelectedTool.Arrow) {
         this.drawArrow(this.startX, this.startY, e.clientX, e.clientY);
+      } else if (selectedTool === SelectedTool.Diamond) {
+        this.drawDiamond(this.startX, this.startY, width, height);
       }
     }
   };
@@ -292,5 +304,23 @@ export class Game {
 
     this.ctx.stroke();
     this.ctx.closePath();
+  }
+
+  drawDiamond(x: number, y: number, width: number, height: number) {
+    this.ctx.beginPath();
+    this.ctx.moveTo(x, y - height / 2);
+    this.ctx.lineTo(x + width / 2, y);
+    this.ctx.lineTo(x, y + height / 2);
+    this.ctx.lineTo(x - width / 2, y);
+    this.ctx.closePath();
+    this.ctx.stroke();
+  }
+
+  scaleCanvas(scale: number) {
+    this.canvas.width = this.canvas.width * scale;
+    this.canvas.height = this.canvas.height * scale;
+    this.canvas.style.width = `${this.canvas.width}px`;
+    this.canvas.style.height = `${this.canvas.height}px`;
+    this.ctx.scale(scale, scale);
   }
 }

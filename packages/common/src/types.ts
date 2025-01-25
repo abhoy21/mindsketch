@@ -47,6 +47,7 @@ export const SelectedTool = {
   Line: "Line",
   Pencil: "Pencil",
   Eraser: "Eraser",
+  Pointer: "Pointer",
 } as const;
 
 export type SelectedTool = (typeof SelectedTool)[keyof typeof SelectedTool];
@@ -92,8 +93,19 @@ export type ShapeType =
       color: string;
     }
   | {
+      type: "diamond";
+      startX: number;
+      startY: number;
+      width: number;
+      height: number;
+      color: string;
+    }
+  | {
       type: "pencil";
-      points: Array<{ x: number; y: number }>;
+      startX: number;
+      startY: number;
+      endX: number;
+      endY: number;
       color: string;
     }
   | { type: "none" };
