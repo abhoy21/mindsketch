@@ -38,16 +38,18 @@ export const JoinRoomSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters long"),
 });
 
-export enum SelectedTool {
-  Rectangle = "Rectangle",
-  Ellipse = "Ellipse",
-  Diamond = "Diamond",
-  Text = "Text",
-  Arrow = "Arrow",
-  Line = "Line",
-  Pencil = "Pencil",
-  Eraser = "Eraser",
-}
+export const SelectedTool = {
+  Rectangle: "Rectangle",
+  Ellipse: "Ellipse",
+  Diamond: "Diamond",
+  Text: "Text",
+  Arrow: "Arrow",
+  Line: "Line",
+  Pencil: "Pencil",
+  Eraser: "Eraser",
+} as const;
+
+export type SelectedTool = (typeof SelectedTool)[keyof typeof SelectedTool];
 
 export type ShapeType =
   | {
@@ -80,5 +82,18 @@ export type ShapeType =
       text: string;
       color: string;
       fontSize: number;
+    }
+  | {
+      type: "arrow";
+      startX: number;
+      startY: number;
+      endX: number;
+      endY: number;
+      color: string;
+    }
+  | {
+      type: "pencil";
+      points: Array<{ x: number; y: number }>;
+      color: string;
     }
   | { type: "none" };

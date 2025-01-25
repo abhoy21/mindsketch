@@ -12,6 +12,9 @@ export class Game {
   private startY: number;
   private selectedTool: SelectedTool = SelectedTool.Rectangle;
   private textInput: HTMLInputElement | null = null;
+  private painting: boolean = false;
+  private lastX: number = 0;
+  private lastY: number = 0;
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -23,6 +26,7 @@ export class Game {
     this.startX = 0;
     this.startY = 0;
     this.init();
+    this.initHandlers();
     this.initMouseHandlers();
   }
 
@@ -46,6 +50,10 @@ export class Game {
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
     console.log(this.existingShapes);
+    this.displayCanvas();
+  }
+
+  initHandlers() {
     this.socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
 
@@ -61,7 +69,6 @@ export class Game {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     this.existingShapes.map((shape) => {
-      if (!shape) return;
       if (shape.type === "rect") {
         this.ctx.strokeStyle = shape.color;
         this.ctx.strokeRect(
@@ -93,6 +100,9 @@ export class Game {
         this.ctx.fillStyle = shape.color;
         this.ctx.font = `${shape.fontSize}px Arial`;
         this.ctx.fillText(shape.text, shape.startX, shape.startY);
+      } else if (shape.type === "arrow") {
+        this.ctx.strokeStyle = shape.color;
+        this.drawArrow(shape.startX, shape.startY, shape.endX, shape.endY);
       }
     });
   }
@@ -101,6 +111,7 @@ export class Game {
     this.clicked = true;
     this.startX = e.clientX;
     this.startY = e.clientY;
+
     if (this.selectedTool === SelectedTool.Text) {
       this.removeTextInput();
       this.textInput = document.createElement("input");
@@ -108,9 +119,13 @@ export class Game {
       this.textInput.style.position = "absolute";
       this.textInput.style.top = `${e.clientY}px`;
       this.textInput.style.left = `${e.clientX}px`;
-      this.textInput.style.background = "transparent";
+      this.textInput.style.background = "#121212";
       this.textInput.style.border = "none";
       this.textInput.style.outline = "none";
+      this.textInput.style.color = "white";
+      this.textInput.style.caretColor = "white";
+      this.textInput.autofocus = true;
+      this.textInput.placeholder = "Type your text here";
 
       this.textInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
@@ -180,6 +195,15 @@ export class Game {
           endY: e.clientY,
           color: "#fff",
         };
+      } else if (selectedTool === SelectedTool.Arrow) {
+        shape = {
+          type: "arrow",
+          startX: this.startX,
+          startY: this.startY,
+          endX: e.clientX,
+          endY: e.clientY,
+          color: "#fff",
+        };
       }
 
       this.existingShapes.push(shape as ShapeType);
@@ -216,6 +240,8 @@ export class Game {
         this.ctx.lineTo(e.clientX, e.clientY);
         this.ctx.stroke();
         this.ctx.closePath();
+      } else if (selectedTool === SelectedTool.Arrow) {
+        this.drawArrow(this.startX, this.startY, e.clientX, e.clientY);
       }
     }
   };
@@ -224,5 +250,47 @@ export class Game {
     this.canvas.addEventListener("mousedown", this.mouseDownhandler);
     this.canvas.addEventListener("mouseup", this.mouseUpHandler);
     this.canvas.addEventListener("mousemove", this.mouseMoveHandler);
+  }
+
+  drawArrow(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    t = 0.9,
+  ) {
+    const dx = endX - startX;
+    const dy = endY - startY;
+
+    // Calculate the length of the line
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    // Normalized direction vector
+    const unitX = dx / length;
+    const unitY = dy / length;
+
+    // Calculate the midpoint
+    const midX = startX + dx * t;
+    const midY = startY + dy * t;
+
+    // Perpendicular vector for arrowhead
+    const perpX = -unitY;
+    const perpY = unitX;
+
+    // Arrowhead size (proportional to line length)
+    const arrowSize = Math.min(length * 0.1, 10);
+
+    this.ctx.beginPath();
+    // Main line
+    this.ctx.moveTo(startX, startY);
+    this.ctx.lineTo(endX, endY);
+
+    // Arrowhead
+    this.ctx.moveTo(midX + perpX * arrowSize, midY + perpY * arrowSize);
+    this.ctx.lineTo(endX, endY);
+    this.ctx.lineTo(midX - perpX * arrowSize, midY - perpY * arrowSize);
+
+    this.ctx.stroke();
+    this.ctx.closePath();
   }
 }
