@@ -65,3 +65,17 @@ export function createShape(
       return null;
   }
 }
+
+export function createPencilShape(
+  points: Array<{
+    x: number;
+    y: number;
+    lineWidth: number;
+  }>,
+): ShapeType {
+  return {
+    type: "pencil",
+    points: Array.from(points),
+    color: "#fff",
+  };
+}

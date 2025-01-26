@@ -1,7 +1,7 @@
 import { SelectedTool, ShapeType } from "@repo/common/types";
 import { CanvasDrawingUtils } from "./canvas-draw-utils";
 import getExistingShapes from "./http-function";
-import { createShape } from "./shape-create-utils";
+import { createPencilShape, createShape } from "./shape-create-utils";
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -21,6 +21,12 @@ export class Game {
     y: 0,
     scale: 1,
   };
+  private points: Array<{
+    x: number;
+    y: number;
+    lineWidth: number;
+    color: string;
+  }> = [];
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -63,7 +69,7 @@ export class Game {
     const localX = e.clientX;
     const localY = e.clientY;
 
-    const newScale = (this.viewportTransform.scale += e.deltaY * 0.01);
+    const newScale = (this.viewportTransform.scale += e.deltaY * -0.01);
     const newX = localX - (localX - oldX) * (newScale / oldScale);
     const newY = localY - (localY - oldY) * (newScale / oldScale);
 
@@ -79,14 +85,11 @@ export class Game {
     const deltaX = e.clientX - this.previousX;
     const deltaY = e.clientY - this.previousY;
 
-    // Update the viewport transform
     this.viewportTransform.x += deltaX;
     this.viewportTransform.y += deltaY;
 
-    // Redraw the canvas with the new transformation
     this.displayCanvas();
 
-    // Update previous mouse position
     this.previousX = e.clientX;
     this.previousY = e.clientY;
   }
@@ -148,6 +151,9 @@ export class Game {
         case "diamond":
           CanvasDrawingUtils.drawDiamond(this.ctx, shape);
           break;
+        case "pencil":
+          CanvasDrawingUtils.drawPencil(this.ctx, shape);
+          break;
       }
     });
   }
@@ -164,6 +170,20 @@ export class Game {
 
     if (this.selectedTool === SelectedTool.Text) {
       this.handleTextInput(e);
+    }
+
+    if (this.selectedTool === SelectedTool.Pencil) {
+      const pressure = 0.1;
+      const x = e.clientX;
+      const y = e.clientY;
+      const lineWidth = Math.log(pressure + 1) * 40;
+      this.ctx.lineWidth = lineWidth;
+      this.points.push({ x, y, lineWidth, color: "#fff" });
+      CanvasDrawingUtils.drawPencil(this.ctx, {
+        type: "pencil",
+        points: this.points,
+        color: "#fff",
+      });
     }
   };
 
@@ -218,6 +238,22 @@ export class Game {
   mouseUpHandler = (e: MouseEvent) => {
     if (this.selectedTool === SelectedTool.Pointer) {
       this.clicked = false;
+    } else if (this.selectedTool === SelectedTool.Pencil) {
+      const shape = createPencilShape(this.points);
+
+      if (shape) {
+        this.existingShapes.push(shape);
+        this.socket.send(
+          JSON.stringify({
+            type: "chat",
+            message: JSON.stringify(shape),
+            roomId: this.roomId,
+          }),
+        );
+      }
+
+      this.points = [];
+      this.clicked = false;
     } else if (this.selectedTool !== SelectedTool.Text) {
       this.clicked = false;
       const endX = e.clientX;
@@ -249,6 +285,7 @@ export class Game {
       if (this.selectedTool === SelectedTool.Pointer) {
         return this.updatePanning(e);
       }
+
       this.displayCanvas();
       this.ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
 
@@ -259,6 +296,11 @@ export class Game {
       let centerY = 0.0;
       let diamondWidth = 0.0;
       let diamondHeight = 0.0;
+      const pressure = 0.1;
+
+      const x = e.clientX;
+      const y = e.clientY;
+      const lineWidth = Math.log(pressure + 1) * 40;
       switch (this.selectedTool) {
         case SelectedTool.Rectangle:
           this.ctx.strokeRect(
@@ -310,6 +352,15 @@ export class Game {
             width: diamondWidth,
             height: diamondHeight,
             color: "rgba(255, 255, 255, 0.5)",
+          });
+          break;
+        case SelectedTool.Pencil:
+          this.ctx.lineWidth = lineWidth;
+          this.points.push({ x, y, lineWidth, color: "#fff" });
+          CanvasDrawingUtils.drawPencil(this.ctx, {
+            type: "pencil",
+            points: this.points,
+            color: "#fff",
           });
           break;
       }

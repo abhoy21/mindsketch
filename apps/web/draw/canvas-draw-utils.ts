@@ -102,11 +102,46 @@ export class CanvasDrawingUtils {
     ctx: CanvasRenderingContext2D,
     shape: Extract<ShapeType, { type: "pencil" }>,
   ) {
-    ctx.strokeStyle = shape.color;
     ctx.beginPath();
-    ctx.moveTo(shape.startX, shape.startY);
-    ctx.lineTo(shape.endX, shape.endY);
+    ctx.strokeStyle = shape.color;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    const stroke = shape.points;
+    if (!stroke || stroke.length === 0) return;
+
+    // Move to the first point
+    const firstPoint = stroke[0];
+    if (!firstPoint) return;
+
+    ctx.moveTo(firstPoint.x, firstPoint.y);
+
+    // Draw smooth curves between points
+    for (let i = 1; i < stroke.length - 1; i++) {
+      const currentPoint = stroke[i];
+      const nextPoint = stroke[i + 1];
+
+      if (currentPoint && nextPoint) {
+        const midPointX = (currentPoint.x + nextPoint.x) / 2;
+        const midPointY = (currentPoint.y + nextPoint.y) / 2;
+
+        ctx.lineWidth = currentPoint.lineWidth;
+        ctx.quadraticCurveTo(
+          currentPoint.x,
+          currentPoint.y,
+          midPointX,
+          midPointY,
+        );
+      }
+    }
+
+    // Draw the last point
+    const lastPoint = stroke[stroke.length - 1];
+    if (lastPoint) {
+      ctx.lineWidth = lastPoint.lineWidth;
+      ctx.lineTo(lastPoint.x, lastPoint.y);
+    }
+
     ctx.stroke();
-    ctx.closePath();
   }
 }

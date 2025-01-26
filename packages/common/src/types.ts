@@ -102,10 +102,12 @@ export type ShapeType =
     }
   | {
       type: "pencil";
-      startX: number;
-      startY: number;
-      endX: number;
-      endY: number;
+      points: Array<{
+        x: number;
+        y: number;
+        lineWidth: number;
+      }>;
+
       color: string;
     }
   | { type: "none" };
