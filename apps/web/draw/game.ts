@@ -159,12 +159,11 @@ export class Game {
 
   mouseDownhandler = (e: MouseEvent) => {
     this.clicked = true;
+    this.startX = e.clientX;
+    this.startY = e.clientY;
     if (this.selectedTool === SelectedTool.Pointer) {
       this.previousX = e.clientX;
       this.previousY = e.clientY;
-    } else {
-      this.startX = e.clientX;
-      this.startY = e.clientY;
     }
 
     if (this.selectedTool === SelectedTool.Text) {
@@ -235,9 +234,8 @@ export class Game {
   };
 
   mouseUpHandler = (e: MouseEvent) => {
-    if (this.selectedTool === SelectedTool.Pointer) {
-      this.clicked = false;
-    } else if (this.selectedTool === SelectedTool.Pencil) {
+    this.clicked = false;
+    if (this.selectedTool === SelectedTool.Pencil) {
       const shape = createPencilShape(this.points);
 
       if (shape) {
@@ -252,9 +250,7 @@ export class Game {
       }
 
       this.points = [];
-      this.clicked = false;
     } else if (this.selectedTool !== SelectedTool.Text) {
-      this.clicked = false;
       const endX = e.clientX;
       const endY = e.clientY;
 

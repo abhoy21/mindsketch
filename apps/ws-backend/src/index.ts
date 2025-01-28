@@ -50,11 +50,9 @@ wss.on("connection", function connection(ws, request) {
 
     if (parsedData.type === "join") {
       handleJoin(roomId, userId, ws);
-    }
-    if (parsedData.type === "leave") {
+    } else if (parsedData.type === "leave") {
       handleLeave(roomId, userId, ws);
-    }
-    if (parsedData.type === "chat") {
+    } else if (parsedData.type === "chat") {
       console.log("chat", parsedData);
       handleChat(roomId, userId, ws, parsedData);
     } else {
@@ -110,14 +108,19 @@ async function handleChat(
   parsedData: any,
 ) {
   try {
-    const user = users.find((u) => u.ws === ws && u.userId === userId);
+    const user = userManager.findUserByWS(ws);
+    console.log();
     if (!user) {
+      console.log("user not found");
       return;
     }
     const message = parsedData.message;
     if (!message) {
+      console.log("message not got");
       return;
     }
+
+    console.log("inside handleChat: message -> ", message);
 
     let recipients = users.filter((u) => u.rooms.includes(roomId.id));
 

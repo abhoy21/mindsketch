@@ -1,7 +1,9 @@
 import { SelectedTool } from "@repo/common/types";
+import Button from "@repo/ui/button";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Game } from "../draw/game";
 import CanvasNavbar from "./canvas-navbar";
+import CanvasShare from "./canvas-share";
 import CanvasZoomBar from "./canvas-zoom-bar";
 
 export default function Canvas({
@@ -17,8 +19,8 @@ export default function Canvas({
     SelectedTool.Pointer,
   );
   const [zoom, setZoom] = useState<number>(100);
-
   const [game, setGame] = useState<Game>();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -55,16 +57,27 @@ export default function Canvas({
         height={canvasHeight}
       ></canvas>
 
-      <div className='fixed top-2 left-0 right-0 bg-[#232329] max-w-md mx-auto rounded-xl'>
+      <div className='fixed top-2 left-0 right-0 bg-[#232329] max-w-md mx-auto rounded-xl '>
         <CanvasNavbar
           selectedTool={selectedTool}
           setSelectedTool={setSelectedTool}
         />
       </div>
+      <div className='fixed top-2 right-10'>
+        <Button variant='outline' size='sm' onClick={() => setShowModal(true)}>
+          Share
+        </Button>
+      </div>
 
       <div className='fixed bottom-10 left-5 bg-[#232329] max-w-md mx-auto rounded-xl'>
         <CanvasZoomBar zoom={zoom} setZoom={setZoom} />
       </div>
+
+      {showModal && (
+        <div className='fixed inset-0 flex items-center justify-center z-[9999] bg-black bg-opacity-50'>
+          <CanvasShare setShowModal={setShowModal} />
+        </div>
+      )}
     </>
   );
 }
