@@ -1,4 +1,4 @@
-interface DataProps {
+export interface DataProps {
   id: number;
   slug: string;
 }

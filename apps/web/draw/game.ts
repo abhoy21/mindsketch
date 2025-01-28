@@ -25,7 +25,6 @@ export class Game {
     x: number;
     y: number;
     lineWidth: number;
-    color: string;
   }> = [];
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
@@ -178,7 +177,7 @@ export class Game {
       const y = e.clientY;
       const lineWidth = Math.log(pressure + 1) * 40;
       this.ctx.lineWidth = lineWidth;
-      this.points.push({ x, y, lineWidth, color: "#fff" });
+      this.points.push({ x, y, lineWidth });
       CanvasDrawingUtils.drawPencil(this.ctx, {
         type: "pencil",
         points: this.points,
@@ -356,7 +355,7 @@ export class Game {
           break;
         case SelectedTool.Pencil:
           this.ctx.lineWidth = lineWidth;
-          this.points.push({ x, y, lineWidth, color: "#fff" });
+          this.points.push({ x, y, lineWidth });
           CanvasDrawingUtils.drawPencil(this.ctx, {
             type: "pencil",
             points: this.points,
