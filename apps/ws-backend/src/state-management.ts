@@ -11,6 +11,7 @@ interface User {
 export class UserManager {
   private static instance: UserManager;
   private users: User[] = [];
+  private RoomUserMap: Map<number, User[]> = new Map();
 
   private constructor() {}
 
@@ -26,8 +27,32 @@ export class UserManager {
     this.users.push({ ws, userId, rooms: [] });
   }
 
-  removeUser(ws: WebSocket) {
+  addUserToRoom(roomId: number, userId: string, ws: WebSocket) {
+    const user = this.users.find((u) => u.userId === userId && u.ws === ws);
+    if (!user) {
+      return;
+    }
+    if (!this.RoomUserMap.has(roomId)) {
+      this.RoomUserMap.set(roomId, []);
+    }
+    this.RoomUserMap.get(roomId)?.push(user);
+    user.rooms.push(roomId);
+  }
+
+  removeUser(roomId: number, userId: string, ws: WebSocket) {
+    const user = this.users.find((u) => u.ws === ws && u.userId === userId);
+    if (!user) {
+      return;
+    }
     this.users = this.users.filter((u) => u.ws !== ws);
+    const usersInRoom = this.RoomUserMap.get(roomId);
+    if (usersInRoom) {
+      const updatedUsersInRoom = usersInRoom.filter(
+        (u) => u.ws !== ws && u.userId !== userId,
+      );
+
+      this.RoomUserMap.set(roomId, updatedUsersInRoom);
+    }
   }
 
   findUserByWS(ws: WebSocket): User | undefined {
@@ -35,7 +60,7 @@ export class UserManager {
   }
 
   getUsersInRoom(roomId: number): User[] {
-    return this.users.filter((u) => u.rooms.includes(roomId));
+    return this.RoomUserMap.get(roomId) || [];
   }
 
   checkUser(token: string) {

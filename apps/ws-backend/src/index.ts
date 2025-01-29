@@ -15,7 +15,7 @@ interface User {
 const wss = new WebSocketServer({ port: 8080 });
 const userManager = UserManager.getInstance();
 
-const users: User[] = [];
+// const users: User[] = [];
 
 function checkUser(token: string) {
   try {
@@ -82,7 +82,7 @@ async function handleJoin(roomId: DataProps, userId: string, ws: WebSocket) {
       console.log("no such rooms exist");
       return;
     }
-    user.rooms.push(roomId.id);
+    userManager.addUserToRoom(roomId.id, userId, ws);
   } catch (error) {
     console.log(error);
   }
@@ -90,12 +90,7 @@ async function handleJoin(roomId: DataProps, userId: string, ws: WebSocket) {
 
 function handleLeave(roomId: DataProps, userId: string, ws: WebSocket) {
   try {
-    const user = users.find((u) => u.ws === ws && u.userId === userId);
-    if (!user) {
-      return;
-    }
-
-    user.rooms = user.rooms.filter((r) => r !== roomId.id);
+    userManager.removeUser(roomId.id, userId, ws);
   } catch (error) {
     console.log(error);
   }
@@ -122,7 +117,7 @@ async function handleChat(
 
     console.log("inside handleChat: message -> ", message);
 
-    let recipients = users.filter((u) => u.rooms.includes(roomId.id));
+    let recipients = userManager.getUsersInRoom(roomId.id);
 
     await prisma.chat.create({
       data: {
