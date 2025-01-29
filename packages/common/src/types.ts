@@ -48,6 +48,7 @@ export const SelectedTool = {
   Pencil: "Pencil",
   Eraser: "Eraser",
   Pointer: "Pointer",
+  Delete: "Delete",
 } as const;
 
 export type SelectedTool = (typeof SelectedTool)[keyof typeof SelectedTool];

@@ -4,7 +4,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Game } from "../draw/game";
 import CanvasNavbar from "./canvas-navbar";
 import CanvasShare from "./canvas-share";
-import CanvasZoomBar from "./canvas-zoom-bar";
 
 export default function Canvas({
   roomId,
@@ -18,7 +17,7 @@ export default function Canvas({
   const [selectedTool, setSelectedTool] = useState<SelectedTool>(
     SelectedTool.Pointer,
   );
-  const [zoom, setZoom] = useState<number>(100);
+
   const [game, setGame] = useState<Game>();
   const [showModal, setShowModal] = useState(false);
 
@@ -26,12 +25,14 @@ export default function Canvas({
     if (canvasRef.current) {
       if (selectedTool === SelectedTool.Pointer) {
         canvasRef.current.style.cursor = "default";
+      } else if (selectedTool === SelectedTool.Delete) {
+        canvasRef.current.style.cursor = "pointer";
       } else {
         canvasRef.current.style.cursor = "crosshair";
       }
     }
     game?.setTool(selectedTool);
-  }, [selectedTool, game, zoom]);
+  }, [selectedTool, game]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -67,10 +68,6 @@ export default function Canvas({
         <Button variant='outline' size='sm' onClick={() => setShowModal(true)}>
           Share
         </Button>
-      </div>
-
-      <div className='fixed bottom-10 left-5 bg-[#232329] max-w-md mx-auto rounded-xl'>
-        <CanvasZoomBar zoom={zoom} setZoom={setZoom} />
       </div>
 
       {showModal && (

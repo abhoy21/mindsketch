@@ -26,6 +26,7 @@ export class Game {
     y: number;
     lineWidth: number;
   }> = [];
+  private selectedShape: ShapeType | null = null;
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -61,6 +62,8 @@ export class Game {
   }
 
   updateZooming(e: WheelEvent) {
+    e.preventDefault();
+
     const oldScale = this.viewportTransform.scale;
     const oldX = this.viewportTransform.x;
     const oldY = this.viewportTransform.y;
@@ -68,13 +71,24 @@ export class Game {
     const localX = e.clientX;
     const localY = e.clientY;
 
-    const newScale = (this.viewportTransform.scale += e.deltaY * -0.01);
+    const stepSize = 0.1;
+    let newScale;
+
+    if (e.deltaY < 0) {
+      newScale = oldScale + stepSize;
+    } else {
+      newScale = Math.max(0.1, oldScale - stepSize);
+    }
+
     const newX = localX - (localX - oldX) * (newScale / oldScale);
     const newY = localY - (localY - oldY) * (newScale / oldScale);
+
+    console.log("New Scale", newScale);
 
     this.viewportTransform.scale = newScale;
     this.viewportTransform.x = newX;
     this.viewportTransform.y = newY;
+
     this.displayCanvas();
   }
 
@@ -118,6 +132,16 @@ export class Game {
     };
   }
 
+  sendDeleteShape() {
+    const selectedShape = JSON.stringify(this.selectedShape);
+    const message = JSON.stringify({
+      type: "delete",
+      message: selectedShape,
+      roomId: this.roomId,
+    });
+    this.socket.send(message);
+  }
+
   private displayCanvas() {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0);
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -157,10 +181,113 @@ export class Game {
     });
   }
 
+  private isPointInShape(x: number, y: number, shape: ShapeType): boolean {
+    switch (shape.type) {
+      case "rect":
+        return (
+          x >= shape.startX &&
+          x <= shape.startX + shape.width &&
+          y >= shape.startY &&
+          y <= shape.startY + shape.height
+        );
+
+      case "circle":
+        return (
+          x >= shape.centerX - shape.radius &&
+          x <= shape.centerX + shape.radius &&
+          y >= shape.centerY - shape.radius &&
+          y <= shape.centerY + shape.radius
+        );
+
+      case "line":
+        return this.isPointNearLine(
+          x,
+          y,
+          shape.startX,
+          shape.startY,
+          shape.endX,
+          shape.endY,
+        );
+
+      case "arrow":
+        return this.isPointNearLine(
+          x,
+          y,
+          shape.startX,
+          shape.startY,
+          shape.endX,
+          shape.endY,
+        );
+
+      case "diamond":
+        return (
+          x >= shape.startX &&
+          x <= shape.startX + shape.width &&
+          y >= shape.startY &&
+          y <= shape.startY + shape.height
+        );
+
+      case "text":
+        return (
+          x >= shape.startX &&
+          x <= shape.startX + this.textLength(shape.text) &&
+          y >= shape.startY - 14 &&
+          y <= shape.startY
+        );
+
+      default:
+        return false;
+    }
+  }
+
+  private isPointNearLine(
+    px: number,
+    py: number,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+  ): boolean {
+    const lineLengthSquared = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+    if (lineLengthSquared === 0) return false;
+
+    const t =
+      ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / lineLengthSquared;
+    const nearestX = x1 + t * (x2 - x1);
+    const nearestY = y1 + t * (y2 - y1);
+
+    if (t < 0 || t > 1) return false;
+
+    const distanceSquared = (px - nearestX) ** 2 + (py - nearestY) ** 2;
+    const tolerance = 5;
+    return distanceSquared <= tolerance * tolerance;
+  }
+
+  private textLength(text: string) {
+    const averageLength = 14 * 0.6;
+    return averageLength * text.length;
+  }
+
   mouseDownhandler = (e: MouseEvent) => {
     this.clicked = true;
     this.startX = e.clientX;
     this.startY = e.clientY;
+
+    const selectedShape = this.existingShapes.find((shape) =>
+      this.isPointInShape(e.clientX, e.clientY, shape),
+    );
+
+    if (selectedShape) {
+      this.selectedShape = selectedShape;
+      console.log("selectedShape", selectedShape);
+      if (this.selectedTool === SelectedTool.Delete) {
+        console.log("Delete Shape");
+        this.sendDeleteShape();
+        this.displayCanvas();
+      }
+    } else {
+      this.selectedShape = null;
+    }
     if (this.selectedTool === SelectedTool.Pointer) {
       this.previousX = e.clientX;
       this.previousY = e.clientY;

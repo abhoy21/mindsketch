@@ -200,6 +200,23 @@ export default function CanvasNavbar({
           <path d='M8.5,26.3L5,27l0.7-3.5L8.5,26.3z' />
         </svg>
       </Button>
+
+      <Button
+        id='delete'
+        variant='ghost'
+        size='icon'
+        onClick={() => setSelectedTool(SelectedTool.Delete)}
+      >
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          xmlSpace='preserve'
+          className={`${selectedTool === "Delete" ? "bg-[#403e6a] text-red-400" : ""} hover:bg-[#31303b] hover:scale-105 transition-all duration-300 ease-in-out rounded-md p-2`}
+          viewBox='0 0 52 52'
+          fill='#ff8383'
+        >
+          <path d='M45.5 10H33V6c0-2.2-1.8-4-4-4h-6c-2.2 0-4 1.8-4 4v4H6.5c-.8 0-1.5.7-1.5 1.5v3c0 .8.7 1.5 1.5 1.5h39c.8 0 1.5-.7 1.5-1.5v-3c0-.8-.7-1.5-1.5-1.5zM23 7c0-.6.4-1 1-1h4c.6 0 1 .4 1 1v3h-6V7zM41.5 20h-31c-.8 0-1.5.7-1.5 1.5V45c0 2.8 2.2 5 5 5h24c2.8 0 5-2.2 5-5V21.5c0-.8-.7-1.5-1.5-1.5zM23 42c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1V28c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v14zm10 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1V28c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v14z' />
+        </svg>
+      </Button>
     </div>
   );
 }
