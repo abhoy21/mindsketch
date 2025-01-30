@@ -24,9 +24,9 @@ export default function Canvas({
   useEffect(() => {
     if (canvasRef.current) {
       if (selectedTool === SelectedTool.Pointer) {
-        canvasRef.current.style.cursor = "default";
-      } else if (selectedTool === SelectedTool.Delete) {
         canvasRef.current.style.cursor = "pointer";
+      } else if (selectedTool === SelectedTool.Delete) {
+        canvasRef.current.style.cursor = "default";
       } else {
         canvasRef.current.style.cursor = "crosshair";
       }

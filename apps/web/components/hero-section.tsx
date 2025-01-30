@@ -115,7 +115,7 @@ export default function Hero(): React.JSX.Element {
 
                 <div className='aspect-video bg-neutral-800/50 rounded-xl overflow-hidden border border-gray-700/50'>
                   <div className='w-full h-full flex items-center justify-center text-gray-400 font-medium'>
-                    [Interactive Demo canvas]
+                    <video src='/excalidraw.mp4' autoPlay muted loop />
                   </div>
                 </div>
               </div>

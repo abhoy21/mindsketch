@@ -140,6 +140,7 @@ export class Game {
       roomId: this.roomId,
     });
     this.socket.send(message);
+    this.init();
   }
 
   private displayCanvas() {
