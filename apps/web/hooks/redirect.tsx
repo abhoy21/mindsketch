@@ -1,15 +1,30 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export function Redirect() {
   const router = useRouter();
+  const pathname = usePathname();
+
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    const token = localStorage.getItem("token");
+
+    const protectedRoutes = ["/room/join", "/room/create"];
+
+    if (protectedRoutes.includes(pathname) && !token) {
+      router.push("/auth/signin");
+    } else if (pathname.startsWith("/canvas/") && !token) {
+      router.push("/auth/signin");
+    } else if (
+      token &&
+      (pathname === "/auth/signin" ||
+        pathname === "/auth/signup" ||
+        pathname === "/")
+    ) {
       router.push("/room/join");
     }
-  }, [router]);
+  }, [router, pathname]);
 
   return <div></div>;
 }
