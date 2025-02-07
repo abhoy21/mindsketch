@@ -5,7 +5,7 @@ export function createShape(
   startX: number,
   startY: number,
   endX: number,
-  endY: number,
+  endY: number
 ): ShapeType | null {
   const width = endX - startX;
   const height = endY - startY;
@@ -71,7 +71,7 @@ export function createPencilShape(
     x: number;
     y: number;
     lineWidth: number;
-  }>,
+  }>
 ): ShapeType {
   return {
     type: "pencil",

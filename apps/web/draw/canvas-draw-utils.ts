@@ -3,7 +3,7 @@ import { ShapeType } from "@repo/common/types";
 export class CanvasDrawingUtils {
   static drawRect(
     ctx: CanvasRenderingContext2D,
-    shape: Extract<ShapeType, { type: "rect" }>,
+    shape: Extract<ShapeType, { type: "rect" }>
   ) {
     ctx.strokeStyle = shape.color;
     ctx.strokeRect(shape.startX, shape.startY, shape.width, shape.height);
@@ -11,7 +11,7 @@ export class CanvasDrawingUtils {
 
   static drawCircle(
     ctx: CanvasRenderingContext2D,
-    shape: Extract<ShapeType, { type: "circle" }>,
+    shape: Extract<ShapeType, { type: "circle" }>
   ) {
     ctx.strokeStyle = shape.color;
     ctx.beginPath();
@@ -20,7 +20,7 @@ export class CanvasDrawingUtils {
       shape.centerY,
       Math.abs(shape.radius),
       0,
-      Math.PI * 2,
+      Math.PI * 2
     );
     ctx.stroke();
     ctx.closePath();
@@ -28,7 +28,7 @@ export class CanvasDrawingUtils {
 
   static drawLine(
     ctx: CanvasRenderingContext2D,
-    shape: Extract<ShapeType, { type: "line" }>,
+    shape: Extract<ShapeType, { type: "line" }>
   ) {
     ctx.strokeStyle = shape.color;
     ctx.beginPath();
@@ -40,7 +40,7 @@ export class CanvasDrawingUtils {
 
   static drawText(
     ctx: CanvasRenderingContext2D,
-    shape: Extract<ShapeType, { type: "text" }>,
+    shape: Extract<ShapeType, { type: "text" }>
   ) {
     ctx.fillStyle = shape.color;
     ctx.font = `${shape.fontSize}px Arial`;
@@ -50,7 +50,7 @@ export class CanvasDrawingUtils {
   static drawArrow(
     ctx: CanvasRenderingContext2D,
     shape: Extract<ShapeType, { type: "arrow" }>,
-    t = 0.9,
+    t = 0.9
   ) {
     const { startX, startY, endX, endY, color } = shape;
 
@@ -84,7 +84,7 @@ export class CanvasDrawingUtils {
 
   static drawDiamond(
     ctx: CanvasRenderingContext2D,
-    shape: Extract<ShapeType, { type: "diamond" }>,
+    shape: Extract<ShapeType, { type: "diamond" }>
   ) {
     const { startX: x, startY: y, width, height, color } = shape;
 
@@ -100,7 +100,7 @@ export class CanvasDrawingUtils {
 
   static drawPencil(
     ctx: CanvasRenderingContext2D,
-    shape: Extract<ShapeType, { type: "pencil" }>,
+    shape: Extract<ShapeType, { type: "pencil" }>
   ) {
     ctx.beginPath();
     ctx.strokeStyle = shape.color;
@@ -130,12 +130,11 @@ export class CanvasDrawingUtils {
           currentPoint.x,
           currentPoint.y,
           midPointX,
-          midPointY,
+          midPointY
         );
       }
     }
 
-    // Draw the last point
     const lastPoint = stroke[stroke.length - 1];
     if (lastPoint) {
       ctx.lineWidth = lastPoint.lineWidth;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { WS_URL } from "../config";
+
 import Canvas from "./canvas";
 
 export function RoomCanvas({ roomId }: { roomId: string }): React.JSX.Element {
@@ -9,7 +9,7 @@ export function RoomCanvas({ roomId }: { roomId: string }): React.JSX.Element {
 
   useEffect(() => {
     const ws = new WebSocket(
-      `${WS_URL}?token=${localStorage.getItem("token")}`,
+      `${process.env.NEXT_PUBLIC_WS_URL}?token=${localStorage.getItem("token")}`
     );
 
     ws.onopen = () => {

@@ -1,14 +1,13 @@
 import axios from "axios";
-import { HTTP_BACKEND_URL } from "../config";
 
 export default async function getExistingShapes(roomId: string) {
   try {
     const token = localStorage.getItem("token");
     const response = await axios.get(
-      `${HTTP_BACKEND_URL}/api/v1/chats/${roomId}`,
+      `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/chats/${roomId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
-      },
+      }
     );
 
     if (response.status === 200) {

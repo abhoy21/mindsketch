@@ -12,5 +12,5 @@ app.use("/api/v1/auth", userRouter);
 app.use("/api/v1", middleware, useRoom);
 
 app.listen(8000, () => {
-  console.log("Listening on port 3001");
+  console.log("Listening on port 8000");
 });

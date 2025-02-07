@@ -2,6 +2,7 @@ import { SelectedTool, ShapeType } from "@repo/common/types";
 import { CanvasDrawingUtils } from "./canvas-draw-utils";
 import getExistingShapes from "./http-function";
 import { createPencilShape, createShape } from "./shape-create-utils";
+import { TextInputHandler } from "./text-input-handler";
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -13,7 +14,6 @@ export class Game {
   private startX: number;
   private startY: number;
   private selectedTool: SelectedTool = SelectedTool.Rectangle;
-  private textInput: HTMLInputElement | null = null;
   private previousX: number = 0;
   private previousY: number = 0;
   private viewportTransform = {
@@ -27,6 +27,7 @@ export class Game {
     lineWidth: number;
   }> = [];
   private selectedShape: ShapeType | null = null;
+  private textInputHandler: TextInputHandler;
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -40,25 +41,19 @@ export class Game {
     this.init();
     this.initHandlers();
     this.initMouseHandlers();
+    this.textInputHandler = new TextInputHandler(socket, roomId);
   }
 
   destroy() {
     this.canvas.removeEventListener("mousedown", this.mouseDownhandler);
     this.canvas.removeEventListener("mouseup", this.mouseUpHandler);
     this.canvas.removeEventListener("mousemove", this.mouseMoveHandler);
+    this.canvas.removeEventListener("wheel", this.mouseWheelHandler);
+    this.textInputHandler.removeTextInput();
   }
 
   setTool(tool: SelectedTool) {
     this.selectedTool = tool;
-  }
-
-  scaleCanvas(scale: number) {
-    this.canvas.width = this.canvas.width * scale;
-    this.canvas.height = this.canvas.height * scale;
-    this.canvas.style.width = `${this.canvas.width}px`;
-    this.canvas.style.height = `${this.canvas.height}px`;
-    this.ctx.scale(scale, scale);
-    this.init();
   }
 
   updateZooming(e: WheelEvent) {
@@ -107,13 +102,6 @@ export class Game {
     this.previousY = e.clientY;
   }
 
-  removeTextInput() {
-    if (this.textInput) {
-      this.textInput.remove();
-      this.textInput = null;
-    }
-  }
-
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
     console.log("Existing shapes", this.existingShapes);
@@ -152,7 +140,7 @@ export class Game {
       0,
       this.viewportTransform.scale,
       this.viewportTransform.x,
-      this.viewportTransform.y,
+      this.viewportTransform.y
     );
 
     this.existingShapes.forEach((shape) => {
@@ -207,7 +195,7 @@ export class Game {
           shape.startX,
           shape.startY,
           shape.endX,
-          shape.endY,
+          shape.endY
         );
 
       case "arrow":
@@ -217,7 +205,7 @@ export class Game {
           shape.startX,
           shape.startY,
           shape.endX,
-          shape.endY,
+          shape.endY
         );
 
       case "diamond":
@@ -247,7 +235,7 @@ export class Game {
     x1: number,
     y1: number,
     x2: number,
-    y2: number,
+    y2: number
   ): boolean {
     const lineLengthSquared = (x2 - x1) ** 2 + (y2 - y1) ** 2;
     if (lineLengthSquared === 0) return false;
@@ -275,7 +263,7 @@ export class Game {
     this.startY = e.clientY;
 
     const selectedShape = this.existingShapes.find((shape) =>
-      this.isPointInShape(e.clientX, e.clientY, shape),
+      this.isPointInShape(e.clientX, e.clientY, shape)
     );
 
     if (selectedShape) {
@@ -295,7 +283,15 @@ export class Game {
     }
 
     if (this.selectedTool === SelectedTool.Text) {
-      this.handleTextInput(e);
+      this.textInputHandler.handleTextInput(
+        e,
+        this.startX,
+        this.startY,
+        (shape) => {
+          this.existingShapes.push(shape);
+          this.displayCanvas();
+        }
+      );
     }
 
     if (this.selectedTool === SelectedTool.Pencil) {
@@ -313,54 +309,6 @@ export class Game {
     }
   };
 
-  private handleTextInput(e: MouseEvent) {
-    this.removeTextInput();
-    this.textInput = document.createElement("input");
-    this.textInput.type = "text";
-    this.textInput.style.position = "absolute";
-    this.textInput.style.top = `${e.clientY}px`;
-    this.textInput.style.left = `${e.clientX}px`;
-    this.textInput.style.background = "#121212";
-    this.textInput.style.border = "none";
-    this.textInput.style.outline = "none";
-    this.textInput.style.color = "white";
-    this.textInput.style.caretColor = "white";
-    this.textInput.autofocus = true;
-    this.textInput.placeholder = "Type your text here";
-
-    this.textInput.addEventListener("keydown", this.handleTextInputEnter);
-    document.body.appendChild(this.textInput);
-    this.textInput.focus();
-  }
-
-  private handleTextInputEnter = (e: KeyboardEvent) => {
-    if (e.key === "Enter" && this.textInput) {
-      const text = this.textInput.value;
-      const textShape: ShapeType = {
-        type: "text",
-        startX: this.startX,
-        startY: this.startY,
-        text: text,
-        color: "#fff",
-        fontSize: 14,
-      };
-      this.existingShapes.push(textShape);
-      this.socket.send(
-        JSON.stringify({
-          type: "chat",
-          message: JSON.stringify(textShape),
-          roomId: this.roomId,
-        }),
-      );
-
-      this.ctx.fillStyle = "#fff";
-      this.ctx.font = "14px Arial";
-      this.ctx.fillText(text, this.startX, this.startY);
-
-      this.removeTextInput();
-    }
-  };
-
   mouseUpHandler = (e: MouseEvent) => {
     this.clicked = false;
     if (this.selectedTool === SelectedTool.Pencil) {
@@ -373,7 +321,7 @@ export class Game {
             type: "chat",
             message: JSON.stringify(shape),
             roomId: this.roomId,
-          }),
+          })
         );
       }
 
@@ -387,7 +335,7 @@ export class Game {
         this.startX,
         this.startY,
         endX,
-        endY,
+        endY
       );
 
       if (shape) {
@@ -397,7 +345,7 @@ export class Game {
             type: "chat",
             message: JSON.stringify(shape),
             roomId: this.roomId,
-          }),
+          })
         );
       }
     }
@@ -430,14 +378,14 @@ export class Game {
             this.startX,
             this.startY,
             endX - this.startX,
-            endY - this.startY,
+            endY - this.startY
           );
           break;
         case SelectedTool.Ellipse:
           radius =
             Math.max(
               Math.abs(endX - this.startX),
-              Math.abs(endY - this.startY),
+              Math.abs(endY - this.startY)
             ) / 2;
           centerX = this.startX + (endX - this.startX) / 2;
           centerY = this.startY + (endY - this.startY) / 2;

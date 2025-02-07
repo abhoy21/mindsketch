@@ -15,7 +15,7 @@ export default function Canvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasWidth, canvasHeight] = useWindowSize();
   const [selectedTool, setSelectedTool] = useState<SelectedTool>(
-    SelectedTool.Pointer,
+    SelectedTool.Pointer
   );
 
   const [game, setGame] = useState<Game>();
@@ -37,6 +37,7 @@ export default function Canvas({
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d")!;
       canvas.width = canvasWidth as number;
       canvas.height = canvasHeight as number;
 
@@ -49,29 +50,46 @@ export default function Canvas({
     }
   }, [canvasRef, roomId, socket, canvasWidth, canvasHeight]);
 
+  const handleLogout = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      localStorage.removeItem("token");
+      window.location.href = "/auth/signin";
+    }
+  };
+
   return (
     <>
       <canvas
-        className='bg-[#121212] net-pattern-canvas'
+        className="bg-[#121212] net-pattern-canvas"
         ref={canvasRef}
         width={canvasWidth}
         height={canvasHeight}
       ></canvas>
 
-      <div className='fixed top-2 left-0 right-0 bg-[#232329] max-w-md mx-auto rounded-xl '>
+      <div className="fixed top-2 left-0 right-0 bg-[#232329] max-w-md mx-auto rounded-xl ">
         <CanvasNavbar
           selectedTool={selectedTool}
           setSelectedTool={setSelectedTool}
         />
       </div>
-      <div className='fixed top-2 right-10'>
-        <Button variant='outline' size='sm' onClick={() => setShowModal(true)}>
-          Share
-        </Button>
+      <div className="fixed top-2 right-10">
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowModal(true)}
+          >
+            Share
+          </Button>
+          <Button variant="danger" size="sm" onClick={() => handleLogout()}>
+            Sign Out
+          </Button>
+        </div>
       </div>
 
       {showModal && (
-        <div className='fixed inset-0 flex items-center justify-center z-[9999] bg-black bg-opacity-50'>
+        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black bg-opacity-50">
           <CanvasShare setShowModal={setShowModal} />
         </div>
       )}
