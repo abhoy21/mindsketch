@@ -1,6 +1,5 @@
 import { JWT_SECRET } from "@repo/backend-common/config";
 import { DataProps, decode } from "@repo/backend-common/encoder-decoder";
-
 import { prisma } from "@repo/db/client";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { WebSocket, WebSocketServer } from "ws";
