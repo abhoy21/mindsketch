@@ -122,6 +122,7 @@ export class Game {
 
   sendDeleteShape() {
     const selectedShape = JSON.stringify(this.selectedShape);
+    console.log("selectedShape", selectedShape);
     const message = JSON.stringify({
       type: "delete",
       message: selectedShape,
@@ -228,10 +229,10 @@ export class Game {
         if (!shape.points.length) return false;
         console.log("shape.points", shape.points);
         return (
-          x >= shape.points[0]!.x &&
-          x <= shape.points[shape.points.length - 1]!.x &&
-          y >= shape.points[0]!.y &&
-          y <= shape.points[shape.points.length - 1]!.y
+          (x >= shape.points[0]!.x &&
+            x <= shape.points[shape.points.length - 1]!.x) ||
+          (y >= shape.points[0]!.y &&
+            y <= shape.points[shape.points.length - 1]!.y)
         );
 
       default:
@@ -278,6 +279,7 @@ export class Game {
 
     if (selectedShape) {
       this.selectedShape = selectedShape;
+      console.log("selectedShape", this.selectedShape);
       if (this.selectedTool === SelectedTool.Delete) {
         this.sendDeleteShape();
         this.displayCanvas();

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 .net-pattern {
   background-image: radial-gradient(
     circle at center,
@@ -30,26 +29,35 @@
   background-size: 28px 28px;
 }
 
+@keyframes carousel {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-250px * 3));
+  }
+}
+
+.animate-carousel {
+  animation: carousel 25s linear infinite;
+}
+
+/* Hide scrollbar for the carousel */
+.overflow-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.overflow-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hover pause effect */
+.animate-carousel:hover {
+  animation-play-state: paused;
+}
 
 /* width */
 ::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
-
-/* Track */
-::-webkit-scrollbar-track {
-    background: #171717;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #591c877c;
-    border-radius: 5px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #312e81;
-}
-
-

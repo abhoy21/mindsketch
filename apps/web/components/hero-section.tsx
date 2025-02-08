@@ -122,6 +122,49 @@ export default function Hero(): React.JSX.Element {
             </div>
           </div>
         </div>
+
+        {/* Feature Context Section */}
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+          {/* Shadow overlays */}
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#030712] to-transparent z-10"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#030712] to-transparent z-10"></div>
+
+          {/* Scrolling container */}
+          <div className="overflow-hidden">
+            <div className="flex gap-8 animate-carousel opacity-50">
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
+                <h3 className="text-xl font-semibold text-amethyst-200 mb-2">
+                  Real-Time Collaboration
+                </h3>
+              </div>
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
+                <h3 className="text-xl font-semibold text-royal-blue-200 mb-2">
+                  Intuitive Tools
+                </h3>
+              </div>
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
+                <h3 className="text-xl font-semibold text-amethyst-200 mb-2">
+                  Secure Sharing
+                </h3>
+              </div>
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
+                <h3 className="text-xl font-semibold text-amethyst-200 mb-2">
+                  Manage Rooms
+                </h3>
+              </div>
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
+                <h3 className="text-xl font-semibold text-royal-blue-200 mb-2">
+                  Smooth Experience
+                </h3>
+              </div>
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
+                <h3 className="text-xl font-semibold text-amethyst-200 mb-2">
+                  Export Anywhere
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

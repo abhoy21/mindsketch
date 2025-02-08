@@ -1,12 +1,18 @@
 {
   "$schema": "https://turbo.build/schema.json",
-   "globalDependencies": ["**/.env",  "DATABASE_URL", "JWT_SECRET", "HTTP_URL", "WS_URL"],
+  "globalDependencies": [
+    "**/.env",
+    "DATABASE_URL",
+    "JWT_SECRET",
+    "HTTP_URL",
+    "WS_URL"
+  ],
   "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -22,6 +28,9 @@
   "globalEnv": [
     "JWT_SECRET",
     "HTTP_URL",
-    "WS_URL"
+    "WS_URL",
+    "NODE_ENV",
+    "NEXT_PUBLIC_HTTP_URL",
+    "NEXT_PUBLIC_WS_URL"
   ]
 }

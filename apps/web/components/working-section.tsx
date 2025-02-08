@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function WorkingSection(): React.JSX.Element {
   return (
-    <section className="min-h-screen overflow-hidden net-pattern">
+    <section className="pb-12 md:pb-32 overflow-hidden net-pattern">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center font-montserrat mb-16 md:mb-32">
           <h2 className="text-3xl md:text-4xl font-bold text-amethyst-200 mb-4">

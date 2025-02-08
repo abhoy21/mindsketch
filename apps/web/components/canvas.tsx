@@ -37,7 +37,6 @@ export default function Canvas({
   useEffect(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d")!;
       canvas.width = canvasWidth as number;
       canvas.height = canvasHeight as number;
 
