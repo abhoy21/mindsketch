@@ -224,6 +224,16 @@ export class Game {
           y <= shape.startY
         );
 
+      case "pencil":
+        if (!shape.points.length) return false;
+        console.log("shape.points", shape.points);
+        return (
+          x >= shape.points[0]!.x &&
+          x <= shape.points[shape.points.length - 1]!.x &&
+          y >= shape.points[0]!.y &&
+          y <= shape.points[shape.points.length - 1]!.y
+        );
+
       default:
         return false;
     }
@@ -268,9 +278,7 @@ export class Game {
 
     if (selectedShape) {
       this.selectedShape = selectedShape;
-      console.log("selectedShape", selectedShape);
       if (this.selectedTool === SelectedTool.Delete) {
-        console.log("Delete Shape");
         this.sendDeleteShape();
         this.displayCanvas();
       }
@@ -362,9 +370,6 @@ export class Game {
 
       const endX = e.clientX;
       const endY = e.clientY;
-      let radius = 0.0;
-      let centerX = 0.0;
-      let centerY = 0.0;
       let diamondWidth = 0.0;
       let diamondHeight = 0.0;
       const pressure = 0.1;
@@ -374,33 +379,37 @@ export class Game {
       const lineWidth = Math.log(pressure + 1) * 40;
       switch (this.selectedTool) {
         case SelectedTool.Rectangle:
-          this.ctx.strokeRect(
-            this.startX,
-            this.startY,
-            endX - this.startX,
-            endY - this.startY
-          );
+          CanvasDrawingUtils.drawRect(this.ctx, {
+            type: "rect",
+            startX: this.startX,
+            startY: this.startY,
+            width: endX - this.startX,
+            height: endY - this.startY,
+            color: "#fff",
+          });
           break;
         case SelectedTool.Ellipse:
-          radius =
-            Math.max(
-              Math.abs(endX - this.startX),
-              Math.abs(endY - this.startY)
-            ) / 2;
-          centerX = this.startX + (endX - this.startX) / 2;
-          centerY = this.startY + (endY - this.startY) / 2;
-
-          this.ctx.beginPath();
-          this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-          this.ctx.stroke();
-          this.ctx.closePath();
+          CanvasDrawingUtils.drawCircle(this.ctx, {
+            type: "circle",
+            centerX: this.startX + (endX - this.startX) / 2,
+            centerY: this.startY + (endY - this.startY) / 2,
+            radius:
+              Math.max(
+                Math.abs(endX - this.startX),
+                Math.abs(endY - this.startY)
+              ) / 2,
+            color: "#fff",
+          });
           break;
         case SelectedTool.Line:
-          this.ctx.beginPath();
-          this.ctx.moveTo(this.startX, this.startY);
-          this.ctx.lineTo(endX, endY);
-          this.ctx.stroke();
-          this.ctx.closePath();
+          CanvasDrawingUtils.drawLine(this.ctx, {
+            type: "line",
+            startX: this.startX,
+            startY: this.startY,
+            endX,
+            endY,
+            color: "#fff",
+          });
           break;
         case SelectedTool.Arrow:
           CanvasDrawingUtils.drawArrow(this.ctx, {
