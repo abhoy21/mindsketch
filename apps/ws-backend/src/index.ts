@@ -1,21 +1,12 @@
 import { JWT_SECRET } from "@repo/backend-common/config";
 import { DataProps, decode } from "@repo/backend-common/encoder-decoder";
-
 import { prisma } from "@repo/db/client";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { WebSocket, WebSocketServer } from "ws";
 import { UserManager } from "./state-management";
 
-interface User {
-  ws: WebSocket;
-  userId: string;
-  rooms: number[];
-}
-
 const wss = new WebSocketServer({ port: 8080 });
 const userManager = UserManager.getInstance();
-
-// const users: User[] = [];
 
 function checkUser(token: string) {
   try {
@@ -102,7 +93,7 @@ async function handleChat(
   roomId: DataProps,
   userId: string,
   ws: WebSocket,
-  parsedData: any,
+  parsedData: any
 ) {
   try {
     const user = userManager.findUserByWS(ws);
@@ -144,7 +135,7 @@ async function handleChat(
             type: "chat",
             message: message,
             roomId: roomId.id,
-          }),
+          })
         );
       } catch (sendError) {
         console.error(`Error sending message to user ${u.userId}:`, sendError);
@@ -159,7 +150,7 @@ async function handleDelete(
   roomId: DataProps,
   userId: string,
   ws: WebSocket,
-  parsedData: any,
+  parsedData: any
 ) {
   try {
     const user = userManager.findUserByWS(ws);
