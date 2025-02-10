@@ -58,6 +58,10 @@ export class Game {
     this.selectedTool = tool;
   }
 
+  private deepCopyShape(shape: ShapeType): ShapeType {
+    return JSON.parse(JSON.stringify(shape));
+  }
+
   updateZooming(e: WheelEvent) {
     e.preventDefault();
 
@@ -327,7 +331,7 @@ export class Game {
         this.sendDeleteShape();
         this.displayCanvas();
       } else if (this.selectedTool === SelectedTool.Pointer) {
-        this.oldShape = selectedShape;
+        this.oldShape = this.deepCopyShape(selectedShape);
         console.log("Calling moveObjects", this.oldShape);
         this.moveObjects(e);
       }
