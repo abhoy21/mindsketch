@@ -1,5 +1,5 @@
 import { decode, encode } from "@repo/backend-common/encoder-decoder";
-import { CreateRoomSchema } from "@repo/common/types";
+import { CreateRoomSchema, ShapeType } from "@repo/common/types";
 import { prisma } from "@repo/db/client";
 import { Response, Router } from "express";
 import { AuthReqProps } from "../middleware";
@@ -14,6 +14,13 @@ interface RoomProps extends AuthReqProps {
 
 interface ChatProps extends AuthReqProps {
   params: {
+    roomId: string;
+  };
+}
+
+interface DiagramToCanvasProps extends AuthReqProps {
+  body: {
+    diagram: ShapeType[];
     roomId: string;
   };
 }
@@ -98,5 +105,61 @@ router.get("/chats/:roomId(*)", async (req: ChatProps, res: Response) => {
     res.status(500).json({ message: "Error getting chat" });
   }
 });
+
+router.post(
+  "/diagram-to-canvas",
+  async (req: DiagramToCanvasProps, res: Response) => {
+    try {
+      const userId = req.userId;
+      if (!userId) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+
+      const diagram = req.body.diagram;
+      const roomCode = req.body.roomId;
+      if (!diagram) {
+        res.status(400).json({ message: "Invalid diagram" });
+        return;
+      }
+
+      if (!roomCode) {
+        res.status(400).json({ message: "Invalid roomCode" });
+        return;
+      }
+
+      const roomId = decode(roomCode ?? "");
+
+      if (!roomId) {
+        res.status(400).json({ message: "Invalid roomId" });
+        return;
+      }
+
+      const createPromises = diagram.map((shape) => {
+        return prisma.chat.create({
+          data: {
+            message: JSON.stringify(shape),
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
+            room: {
+              connect: {
+                id: roomId.id,
+              },
+            },
+          },
+        });
+      });
+
+      await Promise.all(createPromises);
+
+      res.status(200).json({ message: "Diagram saved to canvas" });
+    } catch (error) {
+      res.status(500).json({ message: "Error pushing to canvas" });
+    }
+  }
+);
 
 export const useRoom: Router = router;

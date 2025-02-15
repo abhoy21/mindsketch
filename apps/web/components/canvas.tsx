@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Game } from "../draw/game";
 import CanvasNavbar from "./canvas-navbar";
 import CanvasShare from "./canvas-share";
+import AIModal from "./ai-modal";
 
 export default function Canvas({
   roomId,
@@ -20,6 +21,7 @@ export default function Canvas({
 
   const [game, setGame] = useState<Game>();
   const [showModal, setShowModal] = useState(false);
+  const [aiModal, setAiModal] = useState(false);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -74,6 +76,21 @@ export default function Canvas({
           setSelectedTool={setSelectedTool}
         />
       </div>
+
+      <div className="fixed top-3 right-[57rem]">
+        <Button size="sm" className="px-2" onClick={() => setAiModal(true)}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            viewBox="0 0 64 64"
+            className="w-5 h-5"
+            fill="#fff"
+          >
+            <path d="M22.625 2c0 15.834-8.557 30-20.625 30 12.068 0 20.625 14.167 20.625 30 0-15.833 8.557-30 20.625-30-12.068 0-20.625-14.166-20.625-30M47 32c0 7.918-4.277 15-10.313 15C42.723 47 47 54.084 47 62c0-7.916 4.277-15 10.313-15C51.277 47 47 39.918 47 32zM51.688 2c0 7.917-4.277 15-10.313 15 6.035 0 10.313 7.084 10.313 15 0-7.916 4.277-15 10.313-15-6.036 0-10.313-7.083-10.313-15" />
+          </svg>
+          AI
+        </Button>
+      </div>
       <div className="fixed top-2 right-10">
         <div className="flex items-center space-x-2">
           <Button
@@ -92,6 +109,12 @@ export default function Canvas({
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black bg-opacity-50">
           <CanvasShare setShowModal={setShowModal} />
+        </div>
+      )}
+
+      {aiModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black bg-opacity-50">
+          <AIModal setAiModal={setAiModal} />
         </div>
       )}
     </>
