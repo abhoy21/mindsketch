@@ -278,8 +278,9 @@ export class Game {
     const newX = e.clientX;
     const newY = e.clientY;
     console.log("newX, newY", newX, newY);
-
+    console.log("selectedShape", this.selectedShape);
     if (this.selectedShape) {
+      console.log("selectedShape", this.selectedShape.type);
       switch (this.selectedShape.type) {
         case "rect":
           this.selectedShape.startX = newX;
@@ -304,6 +305,30 @@ export class Game {
         case "diamond":
           this.selectedShape.startX = newX;
           this.selectedShape.startY = newY;
+          break;
+        case "text":
+          console.log("Text selectedShape new pos", this.selectedShape);
+          this.selectedShape.startX = newX;
+          this.selectedShape.startY = newY;
+          break;
+        case "pencil":
+          console.log("Pencil selectedShape new pos", this.selectedShape);
+
+          if (
+            this.selectedShape.points &&
+            this.selectedShape.points.length > 0
+          ) {
+            const offsetX = newX - this.selectedShape.points[0]!.x;
+            const offsetY = newY - this.selectedShape.points[0]!.y;
+
+            this.selectedShape.points = this.selectedShape.points.map(
+              (point) => ({
+                x: point.x + offsetX,
+                y: point.y + offsetY,
+                lineWidth: point.lineWidth,
+              })
+            );
+          }
           break;
 
         default:
