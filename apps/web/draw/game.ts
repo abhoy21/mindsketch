@@ -96,6 +96,11 @@ export class Game {
   updatePanning(e: MouseEvent) {
     if (!this.clicked || this.selectedTool !== SelectedTool.Hand) return;
 
+    console.log("Previous X", this.previousX);
+    console.log("Previous Y", this.previousY);
+    console.log("Client X", e.clientX);
+    console.log("Client Y", e.clientY);
+
     const deltaX = e.clientX - this.previousX;
     const deltaY = e.clientY - this.previousY;
 
@@ -150,31 +155,33 @@ export class Game {
       this.viewportTransform.y
     );
 
-    this.existingShapes.forEach((shape) => {
-      switch (shape.type) {
-        case "rect":
-          CanvasDrawingUtils.drawRect(this.ctx, shape);
-          break;
-        case "circle":
-          CanvasDrawingUtils.drawCircle(this.ctx, shape);
-          break;
-        case "line":
-          CanvasDrawingUtils.drawLine(this.ctx, shape);
-          break;
-        case "text":
-          CanvasDrawingUtils.drawText(this.ctx, shape);
-          break;
-        case "arrow":
-          CanvasDrawingUtils.drawArrow(this.ctx, shape);
-          break;
-        case "diamond":
-          CanvasDrawingUtils.drawDiamond(this.ctx, shape);
-          break;
-        case "pencil":
-          CanvasDrawingUtils.drawPencil(this.ctx, shape);
-          break;
-      }
-    });
+    if (this.existingShapes.length > 0) {
+      this.existingShapes.forEach((shape) => {
+        switch (shape.type) {
+          case "rect":
+            CanvasDrawingUtils.drawRect(this.ctx, shape);
+            break;
+          case "circle":
+            CanvasDrawingUtils.drawCircle(this.ctx, shape);
+            break;
+          case "line":
+            CanvasDrawingUtils.drawLine(this.ctx, shape);
+            break;
+          case "text":
+            CanvasDrawingUtils.drawText(this.ctx, shape);
+            break;
+          case "arrow":
+            CanvasDrawingUtils.drawArrow(this.ctx, shape);
+            break;
+          case "diamond":
+            CanvasDrawingUtils.drawDiamond(this.ctx, shape);
+            break;
+          case "pencil":
+            CanvasDrawingUtils.drawPencil(this.ctx, shape);
+            break;
+        }
+      });
+    }
   }
 
   private isPointInShape(x: number, y: number, shape: ShapeType): boolean {
