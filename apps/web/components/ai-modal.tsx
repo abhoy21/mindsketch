@@ -8,7 +8,7 @@ import axios from "axios";
 
 import { ShapeType } from "@repo/common/types";
 import { CanvasDrawingUtils } from "../draw/canvas-draw-utils";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 interface DiagramData {
   shapes: ShapeType[];
@@ -20,7 +20,7 @@ export default function AIModal({
   setAiModal: (s: boolean) => void;
 }): React.JSX.Element {
   const pathname = usePathname();
-  const router = useRouter();
+
   const roomCode = pathname.split("/canvas/")[1];
   const [loading, setLoading] = useState(false);
   const [isInserting, setIsInserting] = useState(false);
@@ -116,7 +116,7 @@ export default function AIModal({
         console.log("Response:", response.data);
         setIsInserting(false);
         setAiModal(false);
-        router.refresh();
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error pushing to canvas", error);

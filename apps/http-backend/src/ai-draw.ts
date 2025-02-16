@@ -12,7 +12,7 @@ const model = genAI.getGenerativeModel({
 export default async function run(prompt: string) {
   const chat = model.startChat({
     generationConfig: {
-      temperature: 1,
+      temperature: 0.75,
       topP: 0.95,
       topK: 40,
       maxOutputTokens: 8192,
