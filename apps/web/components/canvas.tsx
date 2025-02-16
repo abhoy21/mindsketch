@@ -5,6 +5,7 @@ import { Game } from "../draw/game";
 import CanvasNavbar from "./canvas-navbar";
 import CanvasShare from "./canvas-share";
 import AIModal from "./ai-modal";
+import ZoomBar from "./zoom-bar";
 
 export default function Canvas({
   roomId,
@@ -22,6 +23,7 @@ export default function Canvas({
   const [game, setGame] = useState<Game>();
   const [showModal, setShowModal] = useState(false);
   const [aiModal, setAiModal] = useState(false);
+  const [zoom, setZoom] = useState(1);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -52,6 +54,16 @@ export default function Canvas({
       };
     }
   }, [canvasRef, roomId, socket, canvasWidth, canvasHeight]);
+
+  useEffect(() => {
+    const handleScaleChange = (newScale: number) => {
+      setZoom(newScale);
+    };
+
+    if (game) {
+      game.onScaleChange = handleScaleChange;
+    }
+  }, [game]);
 
   const handleLogout = () => {
     const token = localStorage.getItem("token");
@@ -104,6 +116,10 @@ export default function Canvas({
             Sign Out
           </Button>
         </div>
+      </div>
+
+      <div className="fixed bottom-2 left-10  bg-[#232329] max-w-md mx-auto rounded-xl ">
+        <ZoomBar zoom={zoom} setZoom={setZoom} />
       </div>
 
       {showModal && (

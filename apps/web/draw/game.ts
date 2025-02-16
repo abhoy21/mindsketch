@@ -29,6 +29,7 @@ export class Game {
   private selectedShape: ShapeType | null = null;
   private oldShape: ShapeType | null = null;
   private textInputHandler: TextInputHandler;
+  onScaleChange?: (scale: number) => void;
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -85,6 +86,7 @@ export class Game {
     const newY = localY - (localY - oldY) * (newScale / oldScale);
 
     console.log("New Scale", newScale);
+    if (this.onScaleChange) this.onScaleChange(newScale);
 
     this.viewportTransform.scale = newScale;
     this.viewportTransform.x = newX;
@@ -370,9 +372,16 @@ export class Game {
     } else {
       this.selectedShape = null;
     }
+
+    if (this.selectedTool === SelectedTool.Hand) {
+      this.previousX = e.clientX;
+      this.previousY = e.clientY;
+      return;
+    }
     if (this.selectedTool === SelectedTool.Pointer) {
       this.previousX = e.clientX;
       this.previousY = e.clientY;
+      return;
     }
 
     if (this.selectedTool === SelectedTool.Text) {
