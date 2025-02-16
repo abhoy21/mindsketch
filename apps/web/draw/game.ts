@@ -27,6 +27,7 @@ export class Game {
     lineWidth: number;
   }> = [];
   private selectedShape: ShapeType | null = null;
+  private oldShape: ShapeType | null = null;
   private textInputHandler: TextInputHandler;
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
@@ -53,7 +54,12 @@ export class Game {
   }
 
   setTool(tool: SelectedTool) {
+    console.log("Setting tool", tool);
     this.selectedTool = tool;
+  }
+
+  private deepCopyShape(shape: ShapeType): ShapeType {
+    return JSON.parse(JSON.stringify(shape));
   }
 
   updateZooming(e: WheelEvent) {
@@ -88,7 +94,7 @@ export class Game {
   }
 
   updatePanning(e: MouseEvent) {
-    if (!this.clicked || this.selectedTool !== SelectedTool.Pointer) return;
+    if (!this.clicked || this.selectedTool !== SelectedTool.Hand) return;
 
     const deltaX = e.clientX - this.previousX;
     const deltaY = e.clientY - this.previousY;
@@ -268,6 +274,72 @@ export class Game {
     return averageLength * text.length;
   }
 
+  private moveObjects(e: MouseEvent) {
+    const newX = e.clientX;
+    const newY = e.clientY;
+    console.log("newX, newY", newX, newY);
+    console.log("selectedShape", this.selectedShape);
+    if (this.selectedShape) {
+      console.log("selectedShape", this.selectedShape.type);
+      switch (this.selectedShape.type) {
+        case "rect":
+          this.selectedShape.startX = newX;
+          this.selectedShape.startY = newY;
+          break;
+        case "circle":
+          this.selectedShape.centerX = newX;
+          this.selectedShape.centerY = newY;
+          break;
+        case "line":
+          this.selectedShape.startX = newX;
+          this.selectedShape.startY = newY;
+          this.selectedShape.endX = newX;
+          this.selectedShape.endY = newY;
+          break;
+        case "arrow":
+          this.selectedShape.startX = newX;
+          this.selectedShape.startY = newY;
+          this.selectedShape.endX = newX;
+          this.selectedShape.endY = newY;
+          break;
+        case "diamond":
+          this.selectedShape.startX = newX;
+          this.selectedShape.startY = newY;
+          break;
+        case "text":
+          console.log("Text selectedShape new pos", this.selectedShape);
+          this.selectedShape.startX = newX;
+          this.selectedShape.startY = newY;
+          break;
+        case "pencil":
+          console.log("Pencil selectedShape new pos", this.selectedShape);
+
+          if (
+            this.selectedShape.points &&
+            this.selectedShape.points.length > 0
+          ) {
+            const offsetX = newX - this.selectedShape.points[0]!.x;
+            const offsetY = newY - this.selectedShape.points[0]!.y;
+
+            this.selectedShape.points = this.selectedShape.points.map(
+              (point) => ({
+                x: point.x + offsetX,
+                y: point.y + offsetY,
+                lineWidth: point.lineWidth,
+              })
+            );
+          }
+          break;
+
+        default:
+          return;
+      }
+    }
+
+    this.displayCanvas();
+    console.log("selectedShape inside moveObjects", this.selectedShape);
+  }
+
   mouseDownhandler = (e: MouseEvent) => {
     this.clicked = true;
     this.startX = e.clientX;
@@ -276,13 +348,17 @@ export class Game {
     const selectedShape = this.existingShapes.find((shape) =>
       this.isPointInShape(e.clientX, e.clientY, shape)
     );
-
+    console.log("mouse down selectedShape", selectedShape);
     if (selectedShape) {
       this.selectedShape = selectedShape;
       console.log("selectedShape", this.selectedShape);
       if (this.selectedTool === SelectedTool.Delete) {
         this.sendDeleteShape();
         this.displayCanvas();
+      } else if (this.selectedTool === SelectedTool.Pointer) {
+        this.oldShape = this.deepCopyShape(selectedShape);
+        console.log("Calling moveObjects", this.oldShape);
+        this.moveObjects(e);
       }
     } else {
       this.selectedShape = null;
@@ -336,6 +412,22 @@ export class Game {
       }
 
       this.points = [];
+    } else if (this.selectedTool === SelectedTool.Pointer) {
+      console.log("Mouse up Pointer selected shape", this.selectedShape);
+      if (this.selectedShape && this.oldShape) {
+        this.existingShapes = this.existingShapes.filter(
+          (shape) => shape !== this.oldShape
+        );
+        this.existingShapes.push(this.selectedShape);
+        this.socket.send(
+          JSON.stringify({
+            type: "edit",
+            oldMessage: JSON.stringify(this.oldShape),
+            message: JSON.stringify(this.selectedShape),
+            roomId: this.roomId,
+          })
+        );
+      }
     } else if (this.selectedTool !== SelectedTool.Text) {
       const endX = e.clientX;
       const endY = e.clientY;
@@ -363,8 +455,14 @@ export class Game {
 
   mouseMoveHandler = (e: MouseEvent) => {
     if (this.clicked && this.selectedTool !== SelectedTool.Text) {
-      if (this.selectedTool === SelectedTool.Pointer) {
+      if (this.selectedTool === SelectedTool.Hand) {
+        console.log("Calling update panning", this.selectedTool);
         return this.updatePanning(e);
+      }
+
+      if (this.selectedTool === SelectedTool.Pointer) {
+        console.log("Calling moveObjects");
+        this.moveObjects(e);
       }
 
       this.displayCanvas();

@@ -48,6 +48,8 @@ wss.on("connection", function connection(ws, request) {
       handleChat(roomId, userId, ws, parsedData);
     } else if (parsedData.type === "delete") {
       handleDelete(roomId, userId, ws, parsedData);
+    } else if (parsedData.type === "edit") {
+      handleEdit(roomId, userId, ws, parsedData);
     } else {
       console.log("Unknown message type:", parsedData.type);
     }
@@ -186,6 +188,62 @@ async function handleDelete(
         room: {
           id: roomId.id,
         },
+      },
+    });
+  } catch (error) {
+    console.error("An error occurred while processing chat:", error);
+  }
+}
+
+async function handleEdit(
+  roomId: DataProps,
+  userId: string,
+  ws: WebSocket,
+  parsedData: any
+) {
+  try {
+    const user = userManager.findUserByWS(ws);
+
+    if (!user) {
+      console.log("user not found");
+      return;
+    }
+    console.log("Parsed data", parsedData);
+    const message = parsedData.message;
+    const oldMessage = parsedData.oldMessage;
+    console.log("oldMessage", oldMessage);
+    console.log("message", message);
+    if (!message || !oldMessage) {
+      console.log("message not got");
+      return;
+    }
+
+    const messageData = await prisma.chat.findFirst({
+      where: {
+        message: oldMessage,
+        room: {
+          id: roomId.id,
+        },
+      },
+    });
+
+    console.log("messageData", messageData);
+
+    if (!messageData) {
+      console.log("message not found");
+      return;
+    }
+
+    await prisma.chat.update({
+      where: {
+        id: messageData.id,
+        message: oldMessage,
+        room: {
+          id: roomId.id,
+        },
+      },
+      data: {
+        message: message,
       },
     });
   } catch (error) {
