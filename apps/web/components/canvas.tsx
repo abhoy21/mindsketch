@@ -30,7 +30,7 @@ export default function Canvas({
       if (selectedTool === SelectedTool.Pointer) {
         canvasRef.current.style.cursor = "default";
       } else if (selectedTool === SelectedTool.Delete) {
-        canvasRef.current.style.cursor = "delete";
+        canvasRef.current.style.cursor = "not-allowed";
       } else if (selectedTool === SelectedTool.Hand) {
         canvasRef.current.style.cursor = "grab";
       } else {

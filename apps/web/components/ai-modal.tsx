@@ -2,13 +2,11 @@
 
 import Button from "@repo/ui/button";
 import Logo from "./logo";
-
 import { useRef, useState } from "react";
 import axios from "axios";
-
 import { ShapeType } from "@repo/common/types";
-import { CanvasDrawingUtils } from "../draw/canvas-draw-utils";
 import { usePathname } from "next/navigation";
+import { CanvasShapeManager } from "../draw/canvas-draw-utils";
 
 interface DiagramData {
   shapes: ShapeType[];
@@ -62,34 +60,12 @@ export default function AIModal({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const canvasShapeManager = new CanvasShapeManager(ctx);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log("Shapes: ", shapes);
+
     shapes.forEach((shape) => {
-      switch (shape.type) {
-        case "rect":
-          CanvasDrawingUtils.drawRect(ctx, shape);
-          break;
-        case "circle":
-          CanvasDrawingUtils.drawCircle(ctx, shape);
-          break;
-        case "line":
-          CanvasDrawingUtils.drawLine(ctx, shape);
-          break;
-        case "text":
-          CanvasDrawingUtils.drawText(ctx, shape);
-          break;
-        case "arrow":
-          CanvasDrawingUtils.drawArrow(ctx, shape);
-          break;
-        case "diamond":
-          CanvasDrawingUtils.drawDiamond(ctx, shape);
-          break;
-        case "pencil":
-          CanvasDrawingUtils.drawPencil(ctx, shape);
-          break;
-        default:
-          console.warn(`Unsupported shape type: ${shape.type}`);
-      }
+      canvasShapeManager.drawShape(shape);
     });
 
     setShapes(shapes);

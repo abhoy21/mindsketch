@@ -1,7 +1,6 @@
 import { SelectedTool, ShapeType } from "@repo/common/types";
-import { CanvasDrawingUtils } from "./canvas-draw-utils";
+import { CanvasShapeManager } from "./canvas-draw-utils";
 import getExistingShapes from "./http-function";
-import { createPencilShape, createShape } from "./shape-create-utils";
 import { TextInputHandler } from "./text-input-handler";
 
 export class Game {
@@ -29,6 +28,7 @@ export class Game {
   private selectedShape: ShapeType | null = null;
   private oldShape: ShapeType | null = null;
   private textInputHandler: TextInputHandler;
+  private canvasShapeManager: CanvasShapeManager;
   onScaleChange?: (scale: number) => void;
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
@@ -40,6 +40,7 @@ export class Game {
     this.clicked = false;
     this.startX = 0;
     this.startY = 0;
+    this.canvasShapeManager = new CanvasShapeManager(this.ctx);
     this.init();
     this.initHandlers();
     this.initMouseHandlers();
@@ -55,7 +56,6 @@ export class Game {
   }
 
   setTool(tool: SelectedTool) {
-    console.log("Setting tool", tool);
     this.selectedTool = tool;
   }
 
@@ -85,7 +85,6 @@ export class Game {
     const newX = localX - (localX - oldX) * (newScale / oldScale);
     const newY = localY - (localY - oldY) * (newScale / oldScale);
 
-    console.log("New Scale", newScale);
     if (this.onScaleChange) this.onScaleChange(newScale);
 
     this.viewportTransform.scale = newScale;
@@ -97,11 +96,6 @@ export class Game {
 
   updatePanning(e: MouseEvent) {
     if (!this.clicked || this.selectedTool !== SelectedTool.Hand) return;
-
-    console.log("Previous X", this.previousX);
-    console.log("Previous Y", this.previousY);
-    console.log("Client X", e.clientX);
-    console.log("Client Y", e.clientY);
 
     const deltaX = e.clientX - this.previousX;
     const deltaY = e.clientY - this.previousY;
@@ -117,7 +111,7 @@ export class Game {
 
   async init() {
     this.existingShapes = await getExistingShapes(this.roomId);
-    console.log("Existing shapes", this.existingShapes);
+
     this.displayCanvas();
   }
 
@@ -134,15 +128,20 @@ export class Game {
   }
 
   sendDeleteShape() {
-    const selectedShape = JSON.stringify(this.selectedShape);
-    console.log("selectedShape", selectedShape);
-    const message = JSON.stringify({
-      type: "delete",
-      message: selectedShape,
-      roomId: this.roomId,
-    });
-    this.socket.send(message);
-    this.init();
+    if (this.selectedShape) {
+      this.existingShapes = this.existingShapes.filter(
+        (shape) => shape !== this.selectedShape
+      );
+      this.socket.send(
+        JSON.stringify({
+          type: "delete",
+          message: JSON.stringify(this.selectedShape),
+          roomId: this.roomId,
+        })
+      );
+      this.selectedShape = null;
+      this.displayCanvas();
+    }
   }
 
   private displayCanvas() {
@@ -157,33 +156,9 @@ export class Game {
       this.viewportTransform.y
     );
 
-    if (this.existingShapes.length > 0) {
-      this.existingShapes.forEach((shape) => {
-        switch (shape.type) {
-          case "rect":
-            CanvasDrawingUtils.drawRect(this.ctx, shape);
-            break;
-          case "circle":
-            CanvasDrawingUtils.drawCircle(this.ctx, shape);
-            break;
-          case "line":
-            CanvasDrawingUtils.drawLine(this.ctx, shape);
-            break;
-          case "text":
-            CanvasDrawingUtils.drawText(this.ctx, shape);
-            break;
-          case "arrow":
-            CanvasDrawingUtils.drawArrow(this.ctx, shape);
-            break;
-          case "diamond":
-            CanvasDrawingUtils.drawDiamond(this.ctx, shape);
-            break;
-          case "pencil":
-            CanvasDrawingUtils.drawPencil(this.ctx, shape);
-            break;
-        }
-      });
-    }
+    this.existingShapes.forEach((shape) => {
+      this.canvasShapeManager.drawShape(shape);
+    });
   }
 
   private isPointInShape(x: number, y: number, shape: ShapeType): boolean {
@@ -242,7 +217,7 @@ export class Game {
 
       case "pencil":
         if (!shape.points.length) return false;
-        console.log("shape.points", shape.points);
+
         return (
           (x >= shape.points[0]!.x &&
             x <= shape.points[shape.points.length - 1]!.x) ||
@@ -286,10 +261,8 @@ export class Game {
   private moveObjects(e: MouseEvent) {
     const newX = e.clientX;
     const newY = e.clientY;
-    console.log("newX, newY", newX, newY);
-    console.log("selectedShape", this.selectedShape);
+
     if (this.selectedShape) {
-      console.log("selectedShape", this.selectedShape.type);
       switch (this.selectedShape.type) {
         case "rect":
           this.selectedShape.startX = newX;
@@ -316,13 +289,10 @@ export class Game {
           this.selectedShape.startY = newY;
           break;
         case "text":
-          console.log("Text selectedShape new pos", this.selectedShape);
           this.selectedShape.startX = newX;
           this.selectedShape.startY = newY;
           break;
         case "pencil":
-          console.log("Pencil selectedShape new pos", this.selectedShape);
-
           if (
             this.selectedShape.points &&
             this.selectedShape.points.length > 0
@@ -346,7 +316,6 @@ export class Game {
     }
 
     this.displayCanvas();
-    console.log("selectedShape inside moveObjects", this.selectedShape);
   }
 
   mouseDownhandler = (e: MouseEvent) => {
@@ -357,16 +326,16 @@ export class Game {
     const selectedShape = this.existingShapes.find((shape) =>
       this.isPointInShape(e.clientX, e.clientY, shape)
     );
-    console.log("mouse down selectedShape", selectedShape);
+
     if (selectedShape) {
       this.selectedShape = selectedShape;
-      console.log("selectedShape", this.selectedShape);
+
       if (this.selectedTool === SelectedTool.Delete) {
         this.sendDeleteShape();
         this.displayCanvas();
       } else if (this.selectedTool === SelectedTool.Pointer) {
         this.oldShape = this.deepCopyShape(selectedShape);
-        console.log("Calling moveObjects", this.oldShape);
+
         this.moveObjects(e);
       }
     } else {
@@ -403,7 +372,7 @@ export class Game {
       const lineWidth = Math.log(pressure + 1) * 40;
       this.ctx.lineWidth = lineWidth;
       this.points.push({ x, y, lineWidth });
-      CanvasDrawingUtils.drawPencil(this.ctx, {
+      this.canvasShapeManager.drawShape({
         type: "pencil",
         points: this.points,
         color: "#fff",
@@ -414,7 +383,10 @@ export class Game {
   mouseUpHandler = (e: MouseEvent) => {
     this.clicked = false;
     if (this.selectedTool === SelectedTool.Pencil) {
-      const shape = createPencilShape(this.points);
+      const shape = this.canvasShapeManager.createPencilShape(
+        this.points,
+        "#fff"
+      );
 
       if (shape) {
         this.existingShapes.push(shape);
@@ -429,7 +401,6 @@ export class Game {
 
       this.points = [];
     } else if (this.selectedTool === SelectedTool.Pointer) {
-      console.log("Mouse up Pointer selected shape", this.selectedShape);
       if (this.selectedShape && this.oldShape) {
         this.existingShapes = this.existingShapes.filter(
           (shape) => shape !== this.oldShape
@@ -447,8 +418,7 @@ export class Game {
     } else if (this.selectedTool !== SelectedTool.Text) {
       const endX = e.clientX;
       const endY = e.clientY;
-
-      const shape = createShape(
+      const shape = this.canvasShapeManager.createAndDrawShape(
         this.selectedTool,
         this.startX,
         this.startY,
@@ -470,14 +440,24 @@ export class Game {
   };
 
   mouseMoveHandler = (e: MouseEvent) => {
-    if (this.clicked && this.selectedTool !== SelectedTool.Text) {
+    if (this.selectedTool === SelectedTool.Delete && this.clicked) {
+      const x = e.clientX;
+      const y = e.clientY;
+
+      const shapeToDelete = this.existingShapes.find((shape) =>
+        this.isPointInShape(x, y, shape)
+      );
+
+      if (shapeToDelete) {
+        this.selectedShape = shapeToDelete;
+        this.sendDeleteShape();
+      }
+    } else if (this.clicked && this.selectedTool !== SelectedTool.Text) {
       if (this.selectedTool === SelectedTool.Hand) {
-        console.log("Calling update panning", this.selectedTool);
         return this.updatePanning(e);
       }
 
       if (this.selectedTool === SelectedTool.Pointer) {
-        console.log("Calling moveObjects");
         this.moveObjects(e);
       }
 
@@ -486,8 +466,6 @@ export class Game {
 
       const endX = e.clientX;
       const endY = e.clientY;
-      let diamondWidth = 0.0;
-      let diamondHeight = 0.0;
       const pressure = 0.1;
 
       const x = e.clientX;
@@ -495,7 +473,7 @@ export class Game {
       const lineWidth = Math.log(pressure + 1) * 40;
       switch (this.selectedTool) {
         case SelectedTool.Rectangle:
-          CanvasDrawingUtils.drawRect(this.ctx, {
+          this.canvasShapeManager.drawShape({
             type: "rect",
             startX: this.startX,
             startY: this.startY,
@@ -505,7 +483,7 @@ export class Game {
           });
           break;
         case SelectedTool.Ellipse:
-          CanvasDrawingUtils.drawCircle(this.ctx, {
+          this.canvasShapeManager.drawShape({
             type: "circle",
             centerX: this.startX + (endX - this.startX) / 2,
             centerY: this.startY + (endY - this.startY) / 2,
@@ -518,42 +496,38 @@ export class Game {
           });
           break;
         case SelectedTool.Line:
-          CanvasDrawingUtils.drawLine(this.ctx, {
+          this.canvasShapeManager.drawShape({
             type: "line",
             startX: this.startX,
             startY: this.startY,
-            endX,
-            endY,
+            endX: endX,
+            endY: endY,
             color: "#fff",
           });
           break;
         case SelectedTool.Arrow:
-          CanvasDrawingUtils.drawArrow(this.ctx, {
+          this.canvasShapeManager.drawShape({
             type: "arrow",
             startX: this.startX,
             startY: this.startY,
             endX: endX,
             endY: endY,
-            color: "rgba(255, 255, 255, 0.5)",
+            color: "#fff",
           });
           break;
         case SelectedTool.Diamond:
-          diamondWidth = endX - this.startX;
-          diamondHeight = endY - this.startY;
-
-          CanvasDrawingUtils.drawDiamond(this.ctx, {
+          this.canvasShapeManager.drawShape({
             type: "diamond",
             startX: this.startX,
             startY: this.startY,
-            width: diamondWidth,
-            height: diamondHeight,
-            color: "rgba(255, 255, 255, 0.5)",
+            width: endX - this.startX,
+            height: endY - this.startY,
+            color: "#fff",
           });
           break;
         case SelectedTool.Pencil:
-          this.ctx.lineWidth = lineWidth;
           this.points.push({ x, y, lineWidth });
-          CanvasDrawingUtils.drawPencil(this.ctx, {
+          this.canvasShapeManager.drawShape({
             type: "pencil",
             points: this.points,
             color: "#fff",
@@ -563,14 +537,14 @@ export class Game {
     }
   };
 
-  mouseWheelHandler = (e: WheelEvent) => {
-    this.updateZooming(e);
-  };
-
   initMouseHandlers() {
     this.canvas.addEventListener("mousedown", this.mouseDownhandler);
     this.canvas.addEventListener("mouseup", this.mouseUpHandler);
     this.canvas.addEventListener("mousemove", this.mouseMoveHandler);
     this.canvas.addEventListener("wheel", this.mouseWheelHandler);
   }
+
+  mouseWheelHandler = (e: WheelEvent) => {
+    this.updateZooming(e);
+  };
 }
