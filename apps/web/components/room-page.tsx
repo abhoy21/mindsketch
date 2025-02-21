@@ -32,7 +32,7 @@ export default function CommonRoomPage({
 
   const onSubmit = async (data: createRoomType | joinRoomType) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("access_token");
       if (isCreate) {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/room`,
@@ -44,8 +44,21 @@ export default function CommonRoomPage({
         if (response.status === 200) {
           reset();
           router.push(`/canvas/${response.data.response}`);
-        } else {
-          await axios;
+        } else if (response.status === 401) {
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/refresh`,
+            {
+              body: {
+                refreshToken: localStorage.getItem("refresh_token"),
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            localStorage.setItem("access_token", response.data.accessToken);
+            localStorage.setItem("refresh_token", response.data.refreshToken);
+            onSubmit(data);
+          }
         }
       } else {
         router.push(`/canvas/${data.name}`);

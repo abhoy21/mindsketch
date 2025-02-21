@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default async function getExistingShapes(roomId: string) {
   try {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("access_token");
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/chats/${roomId}`,
       {

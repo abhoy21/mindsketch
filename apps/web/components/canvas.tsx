@@ -6,6 +6,7 @@ import CanvasNavbar from "./canvas-navbar";
 import CanvasShare from "./canvas-share";
 import AIModal from "./ai-modal";
 import ZoomBar from "./zoom-bar";
+import axios from "axios";
 
 export default function Canvas({
   roomId,
@@ -65,11 +66,26 @@ export default function Canvas({
     }
   }, [game]);
 
-  const handleLogout = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      localStorage.removeItem("token");
-      window.location.href = "/auth/signin";
+  const handleLogout = async () => {
+    const token = localStorage.getItem("access_token");
+    try {
+      if (token) {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/logout`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          localStorage.removeItem("access_token");
+          window.location.href = "/auth/signin";
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 

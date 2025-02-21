@@ -35,7 +35,7 @@ export default function AIModal({
         { prompt: promptRef.current?.value },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",
           },
         }
@@ -45,6 +45,21 @@ export default function AIModal({
         const data: DiagramData = JSON.parse(response.data.response);
 
         drawDiagram(data.shapes);
+      } else if (response.status === 401) {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/refresh`,
+          {
+            body: {
+              refreshToken: localStorage.getItem("refresh_token"),
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          localStorage.setItem("access_token", response.data.accessToken);
+          localStorage.setItem("refresh_token", response.data.refreshToken);
+          drawDiagramWithAI();
+        }
       }
     } catch (error) {
       console.error("Error generating diagram:", error);
@@ -82,7 +97,7 @@ export default function AIModal({
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",
           },
         }
@@ -93,6 +108,21 @@ export default function AIModal({
         setIsInserting(false);
         setAiModal(false);
         window.location.reload();
+      } else if (response.status === 401) {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/refresh`,
+          {
+            body: {
+              refreshToken: localStorage.getItem("refresh_token"),
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          localStorage.setItem("access_token", response.data.accessToken);
+          localStorage.setItem("refresh_token", response.data.refreshToken);
+          saveToDB();
+        }
       }
     } catch (error) {
       console.error("Error pushing to canvas", error);

@@ -9,7 +9,7 @@ export function RoomCanvas({ roomId }: { roomId: string }): React.JSX.Element {
 
   useEffect(() => {
     const ws = new WebSocket(
-      `${process.env.NEXT_PUBLIC_WS_URL}?token=${localStorage.getItem("token")}`
+      `${process.env.NEXT_PUBLIC_WS_URL}?token=${localStorage.getItem("access_token")}`
     );
 
     ws.onopen = () => {

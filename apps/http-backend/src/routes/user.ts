@@ -3,7 +3,9 @@ import { SignInSchema, SignUpSchema } from "@repo/common/types";
 import { prisma } from "@repo/db/client";
 import bcrypt from "bcrypt";
 import { Request, Response, Router } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { generateAccessTokenWithRefreshToken } from "../helper";
+import { AuthReqProps, middleware } from "../middleware";
 
 const router: Router = Router();
 
@@ -86,15 +88,93 @@ router.post("/signin", async (req: Request, res: Response) => {
       return;
     }
 
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET);
+    const { accessToken, refreshToken } =
+      await generateAccessTokenWithRefreshToken(user.id);
 
-    res.status(200).json({ message: "Signin successful", token });
+    if (!accessToken || !refreshToken) {
+      res.status(401).json({ message: "Error signing in user!" });
+      return;
+    }
+
+    res
+      .status(200)
+      .json({ message: "Signin successful", accessToken, refreshToken });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       message:
         "Error signing in user! Please try again with proper credentials!",
     });
+  }
+});
+
+router.post("/logout", middleware, async (req: AuthReqProps, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    const user = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        refreshToken: "",
+      },
+    });
+
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.log("Internal Server Error", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/refresh", async (req: Request, res: Response) => {
+  try {
+    const oldRefreshToken = req.body.refreshToken;
+    const decoded = jwt.verify(oldRefreshToken, JWT_SECRET) as JwtPayload;
+    if (!decoded || !decoded.userId) {
+      res.status(400).json({ message: "Invalid token" });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        id: decoded.userId,
+      },
+    });
+
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+
+    if (user.refreshToken !== oldRefreshToken) {
+      res.status(400).json({ message: "Invalid token" });
+      return;
+    }
+
+    const { accessToken, refreshToken } =
+      await generateAccessTokenWithRefreshToken(user.id);
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
+
+    if (!updatedUser) {
+      res.status(400).json({ message: "Error refreshing token!" });
+      return;
+    }
+
+    res
+      .status(200)
+      .json({ message: "Token refreshed", accessToken, refreshToken });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Error refreshing token!" });
   }
 });
 

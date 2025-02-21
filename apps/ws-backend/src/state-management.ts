@@ -28,31 +28,26 @@ export class UserManager {
   }
 
   addUserToRoom(roomId: number, userId: string, ws: WebSocket) {
+    this.users.map(
+      (u) => u.userId === userId && u.ws === ws && u.rooms.push(roomId)
+    );
+
     const user = this.users.find((u) => u.userId === userId && u.ws === ws);
     if (!user) {
       return;
     }
+
     if (!this.RoomUserMap.has(roomId)) {
       this.RoomUserMap.set(roomId, []);
     }
-    this.RoomUserMap.get(roomId)?.push(user);
-    user.rooms.push(roomId);
+    this.RoomUserMap.get(roomId)!.push(user);
   }
 
   removeUser(roomId: number, userId: string, ws: WebSocket) {
-    const user = this.users.find((u) => u.ws === ws && u.userId === userId);
-    if (!user) {
-      return;
-    }
-    this.users = this.users.filter((u) => u.ws !== ws);
-    const usersInRoom = this.RoomUserMap.get(roomId);
-    if (usersInRoom) {
-      const updatedUsersInRoom = usersInRoom.filter(
-        (u) => u.ws !== ws && u.userId !== userId,
-      );
-
-      this.RoomUserMap.set(roomId, updatedUsersInRoom);
-    }
+    this.users.filter((u) => u.userId !== userId && u.ws !== ws);
+    this.RoomUserMap.get(roomId)!.filter(
+      (u) => u.userId !== userId && u.ws !== ws
+    );
   }
 
   findUserByWS(ws: WebSocket): User | undefined {

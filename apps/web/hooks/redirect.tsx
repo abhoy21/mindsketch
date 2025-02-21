@@ -8,7 +8,7 @@ export function Redirect() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("access_token");
 
     const protectedRoutes = ["/room/join", "/room/create"];
 
