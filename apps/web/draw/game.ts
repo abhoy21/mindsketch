@@ -41,6 +41,7 @@ export class Game {
     this.startX = 0;
     this.startY = 0;
     this.canvasShapeManager = new CanvasShapeManager(this.ctx);
+    this.points = [];
     this.init();
     this.initHandlers();
     this.initMouseHandlers();
@@ -156,9 +157,11 @@ export class Game {
       this.viewportTransform.y
     );
 
-    this.existingShapes.forEach((shape) => {
-      this.canvasShapeManager.drawShape(shape);
-    });
+    if (this.existingShapes) {
+      this.existingShapes.forEach((shape) => {
+        this.canvasShapeManager.drawShape(shape);
+      });
+    }
   }
 
   private isPointInShape(x: number, y: number, shape: ShapeType): boolean {
@@ -322,11 +325,12 @@ export class Game {
     this.clicked = true;
     this.startX = e.clientX;
     this.startY = e.clientY;
-
-    const selectedShape = this.existingShapes.find((shape) =>
-      this.isPointInShape(e.clientX, e.clientY, shape)
-    );
-
+    let selectedShape: ShapeType | undefined;
+    if (this.existingShapes) {
+      selectedShape = this.existingShapes.find((shape) =>
+        this.isPointInShape(e.clientX, e.clientY, shape)
+      );
+    }
     if (selectedShape) {
       this.selectedShape = selectedShape;
 
@@ -366,6 +370,7 @@ export class Game {
     }
 
     if (this.selectedTool === SelectedTool.Pencil) {
+      this.points = [];
       const pressure = 0.1;
       const x = e.clientX;
       const y = e.clientY;
@@ -443,10 +448,12 @@ export class Game {
     if (this.selectedTool === SelectedTool.Delete && this.clicked) {
       const x = e.clientX;
       const y = e.clientY;
-
-      const shapeToDelete = this.existingShapes.find((shape) =>
-        this.isPointInShape(x, y, shape)
-      );
+      let shapeToDelete: ShapeType | undefined;
+      if (this.existingShapes) {
+        shapeToDelete = this.existingShapes.find((shape) =>
+          this.isPointInShape(x, y, shape)
+        );
+      }
 
       if (shapeToDelete) {
         this.selectedShape = shapeToDelete;
@@ -526,6 +533,9 @@ export class Game {
           });
           break;
         case SelectedTool.Pencil:
+          if (!this.points) {
+            this.points = [];
+          }
           this.points.push({ x, y, lineWidth });
           this.canvasShapeManager.drawShape({
             type: "pencil",
