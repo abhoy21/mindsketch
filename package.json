@@ -5,7 +5,12 @@
     "build": "turbo build",
     "dev": "dotenv -- turbo run dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:generate": "cd packages/db && npx prisma generate && cd ../..",
+    "dev:http-backend": "cd apps/http-backend && pnpm run dev",
+    "dev:ws-backend": "cd apps/ws-backend && pnpm run dev",
+    "dev:worker": "cd apps/worker && pnpm run dev",
+    "dev:web": "cd apps/web && pnpm run dev"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

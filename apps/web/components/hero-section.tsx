@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Hero(): React.JSX.Element {
   return (
-    <section className="pt-16 min-h-screen overflow-hidden net-pattern">
+    <section className="py-16 md:py-24 min-h-screen overflow-hidden">
       <div className="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 h-full relative">
         {/* Abstract Background Elements */}
         <div className="absolute top-20 left-0 w-72 h-72 bg-royal-blue-600/10 rounded-full blur-3xl"></div>
@@ -16,7 +16,7 @@ export default function Hero(): React.JSX.Element {
               <span className="px-4 py-2 bg-royal-blue-500/10 text-royal-blue-400 rounded-full text-sm font-medium inline-block">
                 Design Better, Faster
               </span>
-              <h1 className="text-3xl md:text-5xl lg:text-7xl font-montserrat text-white leading-tight tracking-tight">
+              <h1 className="text-3xl md:text-5xl lg:text-7xl font-montserrat bg-gradient-to-br from-amethyst-200 to-amethyst-500 text-transparent bg-clip-text leading-tight tracking-tight py-2">
                 Create{" "}
                 <span className="bg-gradient-to-r from-royal-blue-500 to-amethyst-500 text-transparent bg-clip-text">
                   Beautiful
@@ -123,44 +123,179 @@ export default function Hero(): React.JSX.Element {
           </div>
         </div>
 
-        {/* Feature Context Section */}
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
           {/* Shadow overlays */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#030712] to-transparent z-10"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#030712] to-transparent z-10"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-neutral-900/45 to-transparent z-10"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-neutral-900/45 to-transparent z-10"></div>
 
           {/* Scrolling container */}
           <div className="overflow-hidden">
             <div className="flex gap-8 animate-carousel opacity-50">
-              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
-                <h3 className="text-xl font-semibold text-amethyst-200 mb-2">
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50 flex flex-col">
+                <h3 className="text-xl font-semibold text-amethyst-200 mb-3">
                   Real-Time Collaboration
                 </h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Work together with your team in real-time. See changes
+                  instantly as they happen with smooth synchronization across
+                  all devices.
+                </p>
+                <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-amethyst-500/20 to-transparent"></div>
+                <div className="mt-4 flex justify-end">
+                  <div className="h-6 w-6 rounded-full bg-amethyst-500/20 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-amethyst-200"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
-                <h3 className="text-xl font-semibold text-royal-blue-200 mb-2">
+
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50 flex flex-col">
+                <h3 className="text-xl font-semibold text-royal-blue-200 mb-3">
                   Intuitive Tools
                 </h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Powerful yet simple tools designed for productivity. Our
+                  intuitive interface makes complex tasks feel effortless and
+                  natural.
+                </p>
+                <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-royal-blue-500/20 to-transparent"></div>
+                <div className="mt-4 flex justify-end">
+                  <div className="h-6 w-6 rounded-full bg-royal-blue-500/20 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-royal-blue-200"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
-                <h3 className="text-xl font-semibold text-amethyst-200 mb-2">
+
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50 flex flex-col">
+                <h3 className="text-xl font-semibold text-amethyst-200 mb-3">
                   Secure Sharing
                 </h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Share your work with confidence. Advanced encryption and
+                  granular permission controls keep your data protected at all
+                  times.
+                </p>
+                <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-amethyst-500/20 to-transparent"></div>
+                <div className="mt-4 flex justify-end">
+                  <div className="h-6 w-6 rounded-full bg-amethyst-500/20 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-amethyst-200"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
-                <h3 className="text-xl font-semibold text-amethyst-200 mb-2">
+
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50 flex flex-col">
+                <h3 className="text-xl font-semibold text-amethyst-200 mb-3">
                   Manage Rooms
                 </h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Create dedicated spaces for different projects. Organize your
+                  workflow with custom rooms that keep your team focused and
+                  aligned.
+                </p>
+                <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-amethyst-500/20 to-transparent"></div>
+                <div className="mt-4 flex justify-end">
+                  <div className="h-6 w-6 rounded-full bg-amethyst-500/20 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-amethyst-200"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
-                <h3 className="text-xl font-semibold text-royal-blue-200 mb-2">
+
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50 flex flex-col">
+                <h3 className="text-xl font-semibold text-royal-blue-200 mb-3">
                   Smooth Experience
                 </h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Enjoy a seamless workflow with our optimized performance. Fast
+                  loading times and responsive design create a frictionless
+                  experience.
+                </p>
+                <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-royal-blue-500/20 to-transparent"></div>
+                <div className="mt-4 flex justify-end">
+                  <div className="h-6 w-6 rounded-full bg-royal-blue-500/20 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-royal-blue-200"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
-              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50">
-                <h3 className="text-xl font-semibold text-amethyst-200 mb-2">
+
+              <div className="flex-shrink-0 p-6 w-72 rounded-xl bg-gradient-to-br from-neutral-800/30 to-neutral-900/30 backdrop-blur-xl border border-gray-800/50 flex flex-col">
+                <h3 className="text-xl font-semibold text-amethyst-200 mb-3">
                   Export Anywhere
                 </h3>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  Take your work wherever you need it. Export in multiple
+                  formats compatible with all your favorite tools and platforms.
+                </p>
+                <div className="mt-4 h-px w-full bg-gradient-to-r from-transparent via-amethyst-500/20 to-transparent"></div>
+                <div className="mt-4 flex justify-end">
+                  <div className="h-6 w-6 rounded-full bg-amethyst-500/20 flex items-center justify-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-4 h-4 text-amethyst-200"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

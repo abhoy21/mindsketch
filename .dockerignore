@@ -1,0 +1,7 @@
+
+node_modules
+.pnpm-debug.log
+apps/web/node_modules
+apps/http-backend/node_modules
+apps/ws-backend/node_modules    
+apps/worker/node_modules        

@@ -14,7 +14,7 @@ const wss = new WebSocketServer({ port: 8080 });
 const userManager = UserManager.getInstance();
 
 const client = createClient({
-  url: "redis://localhost:6379",
+  url: process.env.REDIS_URL,
 });
 
 client.on("error", (err) => {

@@ -1,0 +1,23 @@
+FROM node:alpine
+
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+COPY ./packages ./packages
+COPY ./package.json ./package.json
+COPY ./turbo.json ./turbo.json
+COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
+COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY ./apps/ws-backend/package.json ./apps/ws-backend/package.json
+COPY ./apps/ws-backend/tsconfig.json ./apps/ws-backend/tsconfig.json
+
+RUN pnpm install
+
+COPY ./apps/ws-backend/src ./apps/ws-backend/src
+
+RUN pnpm run db:generate
+
+EXPOSE 8080
+
+CMD ["pnpm", "run", "dev:ws-backend"]

@@ -2,7 +2,7 @@ import { createClient } from "redis";
 import { prisma } from "@repo/db/client";
 
 const client = createClient({
-  url: "redis://localhost:6379",
+  url: process.env.REDIS_URL,
 });
 
 async function startWorker() {

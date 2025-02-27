@@ -3,10 +3,10 @@ import Link from "next/link";
 
 export default function WorkingSection(): React.JSX.Element {
   return (
-    <section className="pb-12 md:pb-32 overflow-hidden net-pattern">
+    <section className="py-16 md:py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center font-montserrat mb-16 md:mb-32">
-          <h2 className="text-3xl md:text-4xl font-bold text-amethyst-200 mb-4">
+          <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold bg-gradient-to-br from-amethyst-200 to-amethyst-500 text-transparent bg-clip-text mb-4 tracking-tighter">
             How MindSketch Works?
           </h2>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">

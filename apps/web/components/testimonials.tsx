@@ -2,14 +2,14 @@ import Image from "next/image";
 
 export default function Testimonials(): React.JSX.Element {
   return (
-    <div className="py-16 md:pb-32 net-pattern">
+    <div className="py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative">
           <div className="text-center font-montserrat mb-16 md:mb-32">
-            <h2 className="text-3xl md:text-4xl font-bold text-amethyst-200 mb-4">
-              What Our Users Say
+            <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold bg-gradient-to-br from-amethyst-200 to-amethyst-500 text-transparent bg-clip-text pb-4 text-start tracking-tighter">
+              What Our Users Say...
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-lg text-start mx-4 italic">
               Join thousands of satisfied users who love MindSketch
             </p>
           </div>
@@ -17,7 +17,7 @@ export default function Testimonials(): React.JSX.Element {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
             <div className="flex flex-col gap-4 md:gap-8">
               <div className="flex w-full flex-col gap-8 rounded-xl bg-gradient-to-br from-neutral-950 to-neutral-900 border border-royal-blue-500/25 px-4 py-4 shadow-lg md:gap-60 md:px-8">
-                <h3 className="mt-4 text-base font-medium text-gray-700 md:text-lg">
+                <h3 className="mt-4 text-base font-medium text-gray-400 md:text-lg">
                   “Mindsketch is an absolute game-changer! The real-time
                   collaboration feature makes it incredibly easy to work with my
                   team, no matter where they are. We can brainstorm ideas,
@@ -37,7 +37,7 @@ export default function Testimonials(): React.JSX.Element {
                     />
                   </div>
                   <div className="flex flex-col gap-1 md:gap-2">
-                    <h3 className="text-base font-medium text-gray-700 md:text-lg">
+                    <h3 className="text-base font-medium text-gray-400 md:text-lg">
                       Sophia R.
                     </h3>
                     <p className="text-xs font-bold text-gray-500 md:text-sm">
@@ -48,7 +48,7 @@ export default function Testimonials(): React.JSX.Element {
               </div>
 
               <div className="flex w-full flex-col gap-4 rounded-xl bg-gradient-to-br from-neutral-950 to-neutral-900 border border-amethyst-500/25 p-4 shadow-md md:gap-10">
-                <h3 className="mt-2 text-base font-medium text-gray-700 md:text-lg">
+                <h3 className="mt-2 text-base font-medium text-gray-400 md:text-lg">
                   “As a designer working with a remote team, Mindsketch has
                   become an essential tool for us. It feels like we&apos;re in
                   the same room, brainstorming on a whiteboard together. Highly
@@ -66,7 +66,7 @@ export default function Testimonials(): React.JSX.Element {
                     />
                   </div>
                   <div className="flex flex-col gap-1 md:gap-2">
-                    <h3 className="text-base font-medium text-gray-700 md:text-lg">
+                    <h3 className="text-base font-medium text-gray-400 md:text-lg">
                       James T.
                     </h3>
                     <p className="text-xs font-bold text-gray-500 md:text-sm">
@@ -80,7 +80,7 @@ export default function Testimonials(): React.JSX.Element {
             <div className="flex flex-col gap-4 md:gap-8 lg:col-span-2">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="md:col-span-2 w-full gap-4 rounded-xl bg-gradient-to-br from-neutral-950 to-neutral-900 border border-amethyst-500/25 p-4 shadow-md md:gap-8">
-                  <h3 className="text-base font-medium text-gray-700 md:text-lg my-2 md:mt-6 md:mb-12">
+                  <h3 className="text-base font-medium text-gray-400 md:text-lg my-2 md:mt-6 md:mb-12">
                     “Mindsketch has unlocked a whole new level of creativity for
                     me and my colleagues. Whether we&apos;re mapping out ideas
                     or creating detailed flowcharts, it&apos;s easy to use and
@@ -99,7 +99,7 @@ export default function Testimonials(): React.JSX.Element {
                       />
                     </div>
                     <div className="flex flex-col gap-1 md:gap-2">
-                      <h3 className="text-base font-medium text-gray-700 md:text-lg">
+                      <h3 className="text-base font-medium text-gray-400 md:text-lg">
                         Ananya P.
                       </h3>
                       <p className="text-xs font-bold text-gray-500 md:text-sm">
@@ -112,7 +112,7 @@ export default function Testimonials(): React.JSX.Element {
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="flex w-full flex-col gap-8 rounded-xl bg-gradient-to-br from-neutral-950 to-neutral-900 border border-royal-blue-500/25 px-4 py-4 shadow-lg md:gap-60 md:px-8">
-                  <h3 className="mt-4 text-base font-medium text-gray-700 md:text-lg">
+                  <h3 className="mt-4 text-base font-medium text-gray-400 md:text-lg">
                     “Mindsketch is the perfect platform for anyone who loves to
                     visualize their ideas. The interface is intuitive, and the
                     collaborative features are spot on. I&apos;ve used it for
@@ -134,7 +134,7 @@ export default function Testimonials(): React.JSX.Element {
                       />
                     </div>
                     <div className="flex flex-col gap-1 md:gap-2">
-                      <h3 className="text-base font-medium text-gray-700 md:text-lg">
+                      <h3 className="text-base font-medium text-gray-400 md:text-lg">
                         Lucas D.
                       </h3>
                       <p className="text-xs font-bold text-gray-500 md:text-sm">

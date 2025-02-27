@@ -1,0 +1,23 @@
+FROM node:alpine
+
+WORKDIR /app
+
+RUN npm install -g pnpm
+
+COPY ./packages ./packages
+COPY ./package.json ./package.json
+COPY ./turbo.json ./turbo.json
+COPY ./pnpm-lock.yaml ./pnpm-lock.yaml
+COPY ./pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY ./apps/http-backend/package.json ./apps/http-backend/package.json
+COPY ./apps/http-backend/tsconfig.json ./apps/http-backend/tsconfig.json
+
+RUN pnpm install
+
+COPY ./apps/http-backend/src ./apps/http-backend/src
+
+RUN pnpm run db:generate
+
+EXPOSE 8000
+
+CMD ["pnpm", "run", "dev:http-backend"]
