@@ -96,6 +96,15 @@ router.post("/signin", async (req: Request, res: Response) => {
       return;
     }
 
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken,
+      },
+    });
+
     res
       .status(200)
       .json({ message: "Signin successful", accessToken, refreshToken });
@@ -135,6 +144,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
   try {
     const oldRefreshToken = req.body.refreshToken;
     const decoded = jwt.verify(oldRefreshToken, JWT_SECRET) as JwtPayload;
+    console.log("decoded", decoded);
     if (!decoded || !decoded.userId) {
       res.status(400).json({ message: "Invalid token" });
       return;
@@ -145,7 +155,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
         id: decoded.userId,
       },
     });
-
+    console.log("user", user);
     if (!user) {
       res.status(400).json({ message: "User not found" });
       return;

@@ -41,9 +41,14 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
       );
       if (response.status === 200) {
         console.log(response.data);
-        localStorage.setItem("access_token", response.data.accessToken);
-        localStorage.setItem("refresh_token", response.data.refreshToken);
-        router.push("/room/create");
+
+        if (isSignin) {
+          localStorage.setItem("access_token", response.data.accessToken);
+          localStorage.setItem("refresh_token", response.data.refreshToken);
+          router.push("/room/create");
+        } else {
+          router.push("/auth/signin");
+        }
       }
       reset();
     } catch (error) {

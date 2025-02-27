@@ -7,10 +7,15 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "db:generate": "cd packages/db && npx prisma generate && cd ../..",
-    "dev:http-backend": "cd apps/http-backend && pnpm run dev",
+    "db:migrate": "cd packages/db && npx prisma migrate dev --name init && cd ../..",
+    "dev:http-backend": "pnpm run db:migrate && cd apps/http-backend && pnpm run dev",
     "dev:ws-backend": "cd apps/ws-backend && pnpm run dev",
     "dev:worker": "cd apps/worker && pnpm run dev",
-    "dev:web": "cd apps/web && pnpm run dev"
+    "dev:web": "cd apps/web && pnpm run dev",
+    "web:start": "cd apps/web && pnpm run start",
+    "http-backend:start": "cd apps/http-backend && pnpm run start",
+    "ws-backend:start": "cd apps/ws-backend && pnpm run start",
+    "worker:start": "cd apps/worker && pnpm run start"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

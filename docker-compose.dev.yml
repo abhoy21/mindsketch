@@ -13,9 +13,9 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=mysecretpassword
-      - POSTGRES_DB=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -24,11 +24,11 @@ services:
       context: .
       dockerfile: docker/Dockerfile.http-server
     environment:
-      - DATABASE_URL=postgresql://postgres:mysecretpassword@postgres:5432/postgres
-      - JWT_SECRET=t+WeCZ3HC4HC2UZM5YA/rxaGbV2WfsoK6mWWj+CBPuw=
-      - GEMINI_API_KEY=place_your_own_api_key_here
-      - ACCESS_TOKEN_EXPIRES_IN=3600
-      - REFRESH_TOKEN_EXPIRES_IN=604800
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
+      - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
     ports:
       - 8000:8000
     depends_on:
@@ -39,16 +39,16 @@ services:
       context: .
       dockerfile: docker/Dockerfile.ws-server
     environment:
-      - DATABASE_URL=postgresql://postgres:mysecretpassword@postgres:5432/postgres
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=t+WeCZ3HC4HC2UZM5YA/rxaGbV2WfsoK6mWWj+CBPuw=
-      - GEMINI_API_KEY=place_your_own_api_key_here
-      - ACCESS_TOKEN_EXPIRES_IN=3600
-      - REFRESH_TOKEN_EXPIRES_IN=604800
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ACCESS_TOKEN_EXPIRES_IN=${ACCESS_TOKEN_EXPIRES_IN}
+      - REFRESH_TOKEN_EXPIRES_IN=${REFRESH_TOKEN_EXPIRES_IN}
     ports:
       - 8080:8080
     depends_on:
-      - postgres
+      - http-server
       - redis
 
   worker:
@@ -56,8 +56,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.worker
     environment:
-      - DATABASE_URL=postgresql://postgres:mysecretpassword@postgres:5432/postgres
-      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
     depends_on:
       - postgres
       - redis
@@ -67,8 +67,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile.web
     environment:
-      - NEXT_PUBLIC_API_URL=http://http-server:8000
-      - NEXT_PUBLIC_WS_URL=ws://ws-server:8080
+      - NEXT_PUBLIC_HTTP_URL=${NEXT_PUBLIC_HTTP_URL}
+      - NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
     ports:
       - 3000:3000
     depends_on:

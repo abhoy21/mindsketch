@@ -10,21 +10,20 @@ export function Redirect() {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
 
-    const protectedRoutes = ["/room/join", "/room/create"];
+    const isProtectedRoute =
+      ["/room/join", "/room/create"].includes(pathname) ||
+      pathname.startsWith("/canvas/");
 
-    if (protectedRoutes.includes(pathname) && !token) {
-      router.push("/auth/signin");
-    } else if (pathname.startsWith("/canvas/") && !token) {
-      router.push("/auth/signin");
-    } else if (
-      token &&
-      (pathname === "/auth/signin" ||
-        pathname === "/auth/signup" ||
-        pathname === "/")
-    ) {
-      router.push("/room/join");
+    const isAuthRoute = ["/auth/signin", "/auth/signup", "/"].includes(
+      pathname
+    );
+
+    if (isProtectedRoute && !token) {
+      router.replace("/auth/signin");
+    } else if (token && isAuthRoute) {
+      router.replace("/room/join");
     }
-  }, [router, pathname]);
+  }, [pathname, router]);
 
-  return <div></div>;
+  return null;
 }

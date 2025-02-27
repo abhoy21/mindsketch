@@ -3,15 +3,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateRoomSchema, JoinRoomSchema } from "@repo/common/types";
 import Button from "@repo/ui/button";
 import Input from "@repo/ui/input";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Logo from "./logo";
+import { Redirect } from "../hooks/redirect";
 
-type createRoomType = z.infer<typeof CreateRoomSchema>;
-type joinRoomType = z.infer<typeof JoinRoomSchema>;
+type CreateRoomType = z.infer<typeof CreateRoomSchema>;
+type JoinRoomType = z.infer<typeof JoinRoomSchema>;
+
+interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
 
 export default function CommonRoomPage({
   isCreate,
@@ -25,15 +31,39 @@ export default function CommonRoomPage({
     handleSubmit,
     reset,
     formState: { isValid, errors, isSubmitting },
-  } = useForm<createRoomType | joinRoomType>({
+  } = useForm<CreateRoomType | JoinRoomType>({
     resolver: zodResolver(isCreate ? CreateRoomSchema : JoinRoomSchema),
     mode: "onChange",
   });
 
-  const onSubmit = async (data: createRoomType | joinRoomType) => {
+  const refreshToken = async (): Promise<boolean> => {
     try {
-      const token = localStorage.getItem("access_token");
+      const refreshResponse = await axios.post<RefreshTokenResponse>(
+        `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/refresh`,
+        {
+          refreshToken: localStorage.getItem("refresh_token"),
+        }
+      );
+
+      if (refreshResponse.status === 200) {
+        localStorage.setItem("access_token", refreshResponse.data.accessToken);
+        localStorage.setItem(
+          "refresh_token",
+          refreshResponse.data.refreshToken
+        );
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Token refresh failed:", error);
+      return false;
+    }
+  };
+
+  const onSubmit = async (data: CreateRoomType | JoinRoomType) => {
+    try {
       if (isCreate) {
+        const token = localStorage.getItem("access_token");
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/room`,
           data,
@@ -41,35 +71,34 @@ export default function CommonRoomPage({
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+
         if (response.status === 200) {
           reset();
           router.push(`/canvas/${response.data.response}`);
-        } else if (response.status === 401) {
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/refresh`,
-            {
-              body: {
-                refreshToken: localStorage.getItem("refresh_token"),
-              },
-            }
-          );
-
-          if (response.status === 200) {
-            localStorage.setItem("access_token", response.data.accessToken);
-            localStorage.setItem("refresh_token", response.data.refreshToken);
-            onSubmit(data);
-          }
         }
       } else {
-        router.push(`/canvas/${data.name}`);
+        router.push(`/canvas/${(data as JoinRoomType).name}`);
       }
     } catch (error) {
-      console.log(error);
-      reset();
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 401) {
+        const refreshed = await refreshToken();
+        if (refreshed) {
+          await onSubmit(data); // Retry with new token
+        } else {
+          console.error("Authentication failed. Please log in again.");
+          router.push("/login"); // Redirect to login if refresh fails
+        }
+      } else {
+        console.error("Error:", axiosError);
+        reset();
+      }
     }
   };
+
   return (
     <div className="bg-gradient-to-br from-neutral-900 via-neutral-950 to-neutral-900 w-screen h-screen flex items-center justify-center">
+      <Redirect />
       <div className="p-9 m-2 bg-gradient-to-br from-neutral-950 to-neutral-900 border border-amethyst-500/45 rounded-xl w-full max-w-md">
         <div className="flex flex-col items-start">
           <Logo />
@@ -78,7 +107,7 @@ export default function CommonRoomPage({
           </h1>
           <p className="text-gray-400 text-center text-sm mb-6">
             {isCreate
-              ? " Create room to start drawing diagrams!"
+              ? "Create room to start drawing diagrams!"
               : "Join a room to collaborate and draw!"}
           </p>
         </div>
@@ -102,7 +131,7 @@ export default function CommonRoomPage({
           <p className="text-gray-400">
             {isCreate ? (
               <>
-                <span> If you want to join a room, please click here. </span>
+                <span>If you want to join a room, please click here. </span>
                 <Link
                   href="/room/join"
                   className="font-semibold text-amethyst-300 hover:text-royal-blue-400 transition-colors"
@@ -112,7 +141,7 @@ export default function CommonRoomPage({
               </>
             ) : (
               <>
-                <span> If you want to create a room, please click here. </span>
+                <span>If you want to create a room, please click here. </span>
                 <Link
                   href="/room/create"
                   className="font-semibold text-amethyst-300 hover:text-royal-blue-400 transition-colors"
