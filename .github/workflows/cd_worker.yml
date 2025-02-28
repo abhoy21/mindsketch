@@ -50,14 +50,26 @@ jobs:
             exit 1
             }
 
-            echo "Stopping existing container if it exists..."
+            # Check if Redis container is running
+            echo "Checking if Redis container is running..."
+            if ! sudo docker ps -q -f name=redis; then
+                echo "Redis container is not running. Starting Redis..."
+                sudo docker run -d --name redis -p 6379:6379 redis || {
+                echo "Error: Failed to start Redis container"
+                exit 1
+                }
+            else
+                echo "Redis container is already running."
+            fi
+
+            echo "Stopping existing worker container if it exists..."
             sudo docker stop worker 2>/dev/null || true
 
-            echo "Removing existing container if it exists..."
+            echo "Removing existing worker container if it exists..."
             sudo docker rm worker 2>/dev/null || true
 
-            echo "Running docker container..."
+            echo "Running worker docker container..."
             sudo docker run -d --name worker -e DATABASE_URL=${{secrets.DATABASE_URL}} -e REDIS_URL=${{secrets.REDIS_URL}} abhoy21/mindsketch-worker:${{ github.sha }} || {
-            echo "Error: Failed to run docker container"
+            echo "Error: Failed to run worker container"
             exit 1
             }

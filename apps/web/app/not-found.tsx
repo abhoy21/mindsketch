@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const NotFound = () => {
@@ -267,14 +268,14 @@ const NotFound = () => {
               </svg>
             </div>
             <p className="text-sm md:text-base text-amaranth-300 p-2 mb-4">
-              The stuff you were looking for doesn't exist
+              The stuff you were looking for doesn&apos;t exist
             </p>
-            <a
+            <Link
               href="/"
               className="bg-transparent hover:bg-amaranth-300 text-amaranth-300 hover:text-white rounded shadow hover:shadow-lg py-2 px-4 border border-amaranth-300 hover:border-transparent"
             >
               Retry
-            </a>
+            </Link>
           </div>
         </div>
       </div>
