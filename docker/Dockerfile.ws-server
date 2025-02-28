@@ -20,4 +20,5 @@ RUN pnpm run db:generate
 
 EXPOSE 8080
 
-CMD pnpm run $(if [ "$NODE_ENV" = "production" ]; then echo "ws-backend:start"; else echo "dev:ws-backend"; fi)
+# CMD pnpm run $(if [ "$NODE_ENV" = "production" ]; then echo "ws-backend:start"; else echo "dev:ws-backend"; fi)
+CMD ["pnpm", "run", "dev:ws-backend"]

@@ -16,4 +16,5 @@ RUN pnpm list
 
 EXPOSE 3000
 
-CMD pnpm run $(if [ "$NODE_ENV" = "production" ]; then echo "web:start"; else echo "dev:web"; fi)
+# CMD pnpm run $(if [ "$NODE_ENV" = "production" ]; then echo "web:start"; else echo "dev:web"; fi)
+CMD ["pnpm", "run", "dev:web"]

@@ -18,4 +18,5 @@ COPY ./apps/worker/src ./apps/worker/src
 
 RUN pnpm run db:generate
 
-CMD pnpm run $(if [ "$NODE_ENV" = "production" ]; then echo "worker:start"; else echo "dev:worker"; fi)
+# CMD pnpm run $(if [ "$NODE_ENV" = "production" ]; then echo "worker:start"; else echo "dev:worker"; fi)
+CMD ["pnpm", "run", "dev:worker"]
