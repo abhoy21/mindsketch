@@ -28,7 +28,7 @@ jobs:
           tags: abhoy21/mindsketch-web:${{ github.sha }}
 
       - name: Deploy to VM
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{ secrets.HOST }}
           username: azureuser
