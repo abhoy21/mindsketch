@@ -34,4 +34,24 @@ jobs:
           username: azureuser
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
-          script: ./ws-server.sh
+          script: |
+            #!/bin/bash
+            if [ ! -d "mindsketch" ]; then
+                echo "Creating mindsketch directory..."
+                mkdir mindsketch
+            fi
+
+            echo "Changing directory to mindsketch..."
+            cd mindsketch
+
+            echo "Pulling latest image from Docker Hub..."
+            docker pull abhoy21/mindsketch-ws-server:${GITHUB_SHA} || {
+                echo "Error: Failed to pull latest image from Docker Hub"
+                exit 1
+            }
+
+            echo "Running docker container..."
+            docker run -d -p 8001:8000 --name ws-server -e NODE_ENV=production -e DATABASE_URL="${DATABASE_URL}" -e REDIS_URL="${REDIS_URL}" -e JWT_SECRET="${JWT_SECRET}" -e GEMINI_API_KEY="${GEMINI_API_KEY}" -e ACCESS_TOKEN_EXPIRES_IN="${ACCESS_TOKEN_EXPIRES_IN}" -e REFRESH_TOKEN_EXPIRES_IN="${REFRESH_TOKEN_EXPIRES_IN}" abhoy21/mindsketch-ws-server:${GITHUB_SHA} || {
+                echo "Error: Failed to run docker container"
+                exit 1
+            }
