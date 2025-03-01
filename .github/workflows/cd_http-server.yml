@@ -35,7 +35,7 @@ jobs:
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
           source: ./http-server.sh
-          target: ~/http-server.sh
+          target: ./http-server.sh
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.1
@@ -46,4 +46,4 @@ jobs:
           port: 22
           script: |
             chmod +x ~/http-server.sh
-            ~/http-server.sh
+            ./http-server.sh

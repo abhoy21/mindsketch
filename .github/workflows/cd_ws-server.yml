@@ -35,7 +35,7 @@ jobs:
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
           source: ./ws-server.sh
-          target: ~/ws-server.sh
+          target: ./ws-server.sh
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.1
@@ -46,4 +46,4 @@ jobs:
           port: 22
           script: |
             chmod +x ~/ws-server.sh
-            ~/ws-server.sh
+            ./ws-server.sh
