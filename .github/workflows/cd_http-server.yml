@@ -34,4 +34,7 @@ jobs:
           username: azureuser
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
-          script: ../../http-server.sh
+          script: |
+            cd ..
+            cd ..
+            ./http-server.sh
