@@ -15,23 +15,6 @@ services:
       timeout: 5s
       retries: 3
 
-  postgres:
-    image: postgres:17
-    restart: always
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
   http-server:
     build:
       context: .
@@ -49,7 +32,7 @@ services:
       - 8000:8000
     restart: always
     depends_on:
-      postgres:
+      redis:
         condition: service_healthy
     command: ["pnpm", "run", "http-backend:start"]
 
@@ -89,8 +72,6 @@ services:
       - REDIS_URL=${REDIS_URL}
     restart: always
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     command: ["pnpm", "run", "worker:start"]
@@ -114,5 +95,4 @@ services:
     command: ["pnpm", "run", "web:start"]
 
 volumes:
-  postgres_data:
   redis_data:
