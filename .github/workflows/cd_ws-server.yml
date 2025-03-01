@@ -26,3 +26,12 @@ jobs:
           file: ./docker/Dockerfile.ws-server
           push: true
           tags: abhoy21/mindsketch-ws-server:${{ github.sha }}
+
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.HOST }}
+          username: azureuser
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          port: 22
+          script: ./ws-server.sh
