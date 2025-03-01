@@ -27,23 +27,11 @@ jobs:
           push: true
           tags: abhoy21/mindsketch-worker:${{ github.sha }}
 
-      - name: Copy worker.sh to VM
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.HOST }}
-          username: azureuser
-          key: ${{ secrets.PRIVATE_SSH_KEY }}
-          port: 22
-          source: ./worker.sh
-          target: ~/
-
       - name: Deploy to VM
-        uses: appleboy/ssh-action@v1.2.1
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.HOST }}
           username: azureuser
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
-          script: |
-            chmod +x ~/worker.sh
-            ~/worker.sh
+          script: ./worker.sh
