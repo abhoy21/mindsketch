@@ -35,6 +35,13 @@ jobs:
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
           script: |
+            echo "Listing files and folders in the current directory:"
+            ls -la
+            echo "Navigating to parent directories..."
             cd ..
             cd ..
+            echo "Current directory after navigation:"
+            pwd
+            ls -la
+            echo "Running http-server.sh..."
             ./http-server.sh
