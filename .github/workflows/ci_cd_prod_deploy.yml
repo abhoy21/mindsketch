@@ -29,7 +29,31 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and start services
-        run: |
-          docker-compose -f docker-compose.prod.yml build
-          docker-compose -f docker-compose.prod.yml up -d
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: azureuser
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          port: 22
+          script: |
+            #!/bin/bash
+            if [ ! -d "mindsketch" ]; then
+                echo "Creating mindsketch directory..."
+                mkdir mindsketch
+            fi
+
+            echo "Changing directory to mindsketch..."
+            cd mindsketch
+
+            echo "Pulling latest commits from GitHub..."
+            git pull origi main
+
+            echo "Copying .env file..."
+            cp ../.env .
+
+            echo "Stopping existing containers..."
+            docker-compose -f docker-compose.prod.yml down || true
+
+            echo "Starting up with docker-compose..."
+            docker-compose --env-file .env -f docker-compose.prod.yml up
