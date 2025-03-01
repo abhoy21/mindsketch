@@ -44,4 +44,7 @@ jobs:
             pwd
             ls -la
             echo "Running http-server.sh..."
+            cd home
+            ls -la
+            echo "list all files in home directory"
             ./http-server.sh
