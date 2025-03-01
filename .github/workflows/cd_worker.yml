@@ -23,6 +23,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./docker/Dockerfile.web
+          file: ./docker/Dockerfile.worker
           push: true
-          tags: abhoy21/mindsketch/web:${{ github.sha }}
+          tags: abhoy21/mindsketch/worker:${{ github.sha }}
