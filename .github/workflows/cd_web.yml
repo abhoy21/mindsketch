@@ -35,6 +35,5 @@ jobs:
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
           script: |
-            cd ..
-            cd ..
-            ./web-server.sh
+            chmod +x ~/web.sh
+            ~/web.sh
