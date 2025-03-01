@@ -28,7 +28,7 @@ jobs:
           tags: abhoy21/mindsketch-worker:${{ github.sha }}
 
       - name: Copy worker.sh to VM
-        uses: appleboy/scp-action@v1.0.3
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: azureuser
