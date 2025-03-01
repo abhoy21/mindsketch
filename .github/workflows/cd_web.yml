@@ -27,6 +27,16 @@ jobs:
           push: true
           tags: abhoy21/mindsketch-web:${{ github.sha }}
 
+      - name: Copy web.sh to VM
+        uses: appleboy/scp-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: azureuser
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          port: 22
+          source: ./web.sh
+          target: ~/web.sh
+
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.1
         with:
