@@ -34,17 +34,4 @@ jobs:
           username: azureuser
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           port: 22
-          script: |
-            echo "Listing files and folders in the current directory:"
-            ls -la
-            echo "Navigating to parent directories..."
-            cd ..
-            cd ..
-            echo "Current directory after navigation:"
-            pwd
-            ls -la
-            echo "Running http-server.sh..."
-            cd home
-            ls -la
-            echo "list all files in home directory"
-            ./http-server.sh
+          script: ./http-server.sh
