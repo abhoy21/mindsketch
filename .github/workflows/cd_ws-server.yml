@@ -1,4 +1,4 @@
-name: Deploy the HTTP server
+name: Deploy the WebSocket server
 on:
   push:
     branches:
@@ -25,4 +25,4 @@ jobs:
           context: .
           file: ./docker/Dockerfile.ws-server
           push: true
-          tags: abhoy21/mindsketch/ws-server:${{ github.sha }}
+          tags: abhoy21/mindsketch-ws-server:${{ github.sha }}

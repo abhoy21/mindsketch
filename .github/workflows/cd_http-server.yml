@@ -25,4 +25,4 @@ jobs:
           context: .
           file: ./docker/Dockerfile.http-server
           push: true
-          tags: abhoy21/mindsketch/http-server:${{ github.sha }}
+          tags: abhoy21/mindsketch-http-server:${{ github.sha }}

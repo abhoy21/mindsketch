@@ -1,4 +1,4 @@
-name: Deploy the HTTP server
+name: Deploy the Worker
 on:
   push:
     branches:
@@ -25,4 +25,4 @@ jobs:
           context: .
           file: ./docker/Dockerfile.worker
           push: true
-          tags: abhoy21/mindsketch/worker:${{ github.sha }}
+          tags: abhoy21/mindsketch-worker:${{ github.sha }}
