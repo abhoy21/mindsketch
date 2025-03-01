@@ -45,13 +45,13 @@ jobs:
             cd mindsketch
 
             echo "Pulling latest image from Docker Hub..."
-            docker pull abhoy21/mindsketch-worker:${GITHUB_SHA} || {
-                echo "Error: Failed to pull latest image from Docker Hub"
-                exit 1
+            docker pull abhoy21/mindsketch-worker:${{ github.sha }} || {
+            echo "Error: Failed to pull latest image from Docker Hub"
+            exit 1
             }
 
             echo "Running docker container..."
-            docker run -d --name worker -e NODE_ENV=production -e DATABASE_URL="${DATABASE_URL}" -e REDIS_URL="${REDIS_URL}" abhoy21/mindsketch-worker:${GITHUB_SHA} || {
-                echo "Error: Failed to run docker container"
-                exit 1
+            docker run -d -p 8000:8000 --name web -e NODE_ENV=production -e DATABASE_URL=${{secrets.DATABASE_URL}} -e REDIS_URL=${{secrets.REDIS_URL}} abhoy21/mindsketch-worker:${{ github.sha }} || {
+            echo "Error: Failed to run docker container"
+            exit 1
             }
