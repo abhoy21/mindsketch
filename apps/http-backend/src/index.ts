@@ -9,6 +9,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use("/", (req, res) => {
+  res.send("Server running on port 8000");
+});
+
 app.use("/api/v1/auth", userRouter);
 app.use("/api/v1", middleware, useRoom);
 app.use("/api/v1/ai", middleware, useGenerate);
