@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import { Request, Response, Router } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { generateAccessTokenWithRefreshToken } from "../helper";
-import { AuthReqProps, middleware } from "../middleware";
 
 const router: Router = Router();
 
@@ -114,29 +113,6 @@ router.post("/signin", async (req: Request, res: Response) => {
       message:
         "Error signing in user! Please try again with proper credentials!",
     });
-  }
-});
-
-router.post("/logout", middleware, async (req: AuthReqProps, res: Response) => {
-  try {
-    const userId = req.userId;
-    if (!userId) {
-      res.status(401).send("Unauthorized");
-      return;
-    }
-    const user = await prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        refreshToken: "",
-      },
-    });
-
-    res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
-    console.log("Internal Server Error", error);
-    res.status(500).send("Internal Server Error");
   }
 });
 

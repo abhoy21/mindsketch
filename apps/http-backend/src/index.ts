@@ -4,6 +4,7 @@ import { middleware } from "./middleware";
 import { useRoom } from "./routes/room";
 import { userRouter } from "./routes/user";
 import { useGenerate } from "./routes/generate";
+import logoutRouter from "./routes/logout";
 
 const app = express();
 app.use(express.json());
@@ -14,6 +15,7 @@ app.use("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", userRouter);
+app.use("/api/v1/auth", logoutRouter);
 app.use("/api/v1", middleware, useRoom);
 app.use("/api/v1/ai", middleware, useGenerate);
 
