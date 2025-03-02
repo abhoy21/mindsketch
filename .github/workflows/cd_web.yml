@@ -1,63 +1,63 @@
-name: Deploy the Frontend
-on:
-  push:
-    branches:
-      - main
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
+# name: Deploy the Frontend
+# on:
+#   push:
+#     branches:
+#       - main
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout the code
+#         uses: actions/checkout@v4
 
-      - name: Docker Login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#       - name: Docker Login
+#         uses: docker/login-action@v3
+#         with:
+#           username: ${{ secrets.DOCKERHUB_USERNAME }}
+#           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+#       - name: Set up QEMU
+#         uses: docker/setup-qemu-action@v3
 
-      - name: Build and push the Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./docker/Dockerfile.web
-          push: true
-          tags: abhoy21/mindsketch-web:${{ github.sha }}
+#       - name: Build and push the Docker image
+#         uses: docker/build-push-action@v6
+#         with:
+#           context: .
+#           file: ./docker/Dockerfile.web
+#           push: true
+#           tags: abhoy21/mindsketch-web:${{ github.sha }}
 
-      - name: Deploy to VM
-        uses: appleboy/ssh-action@v1.2.1
-        with:
-          host: ${{ secrets.HOST }}
-          username: azureuser
-          key: ${{ secrets.PRIVATE_SSH_KEY }}
-          port: 22
-          script: |
-            #!/bin/bash
-            if [ ! -d "mindsketch" ]; then
-                echo "Creating mindsketch directory..."
-                mkdir mindsketch
-            fi
+#       - name: Deploy to VM
+#         uses: appleboy/ssh-action@v1.2.1
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: azureuser
+#           key: ${{ secrets.PRIVATE_SSH_KEY }}
+#           port: 22
+#           script: |
+#             #!/bin/bash
+#             if [ ! -d "mindsketch" ]; then
+#                 echo "Creating mindsketch directory..."
+#                 mkdir mindsketch
+#             fi
 
-            echo "Changing directory to mindsketch..."
-            cd mindsketch
+#             echo "Changing directory to mindsketch..."
+#             cd mindsketch
 
-            echo "Pulling latest image from Docker Hub..."
-            sudo docker pull abhoy21/mindsketch-web:${{ github.sha }} || {
-            echo "Error: Failed to pull latest image from Docker Hub"
-            exit 1
-            }
+#             echo "Pulling latest image from Docker Hub..."
+#             sudo docker pull abhoy21/mindsketch-web:${{ github.sha }} || {
+#             echo "Error: Failed to pull latest image from Docker Hub"
+#             exit 1
+#             }
 
-            echo "Stopping existing container if it exists..."
-            sudo docker stop web 2>/dev/null || true
+#             echo "Stopping existing container if it exists..."
+#             sudo docker stop web 2>/dev/null || true
 
-            echo "Removing existing container if it exists..."
-            sudo docker rm web 2>/dev/null || true
+#             echo "Removing existing container if it exists..."
+#             sudo docker rm web 2>/dev/null || true
 
-            echo "Running docker container WEB..."
-            sudo docker run -d -p 3000:3000 --name web -e NEXT_PUBLIC_HTTP_URL=${{secrets.NEXT_PUBLIC_HTTP_URL}} -e NEXT_PUBLIC_WS_URL=${{secrets.NEXT_PUBLIC_WS_URL}} abhoy21/mindsketch-web:${{ github.sha }} || {
-            echo "Error: Failed to run docker container"
-            exit 1
-            }
+#             echo "Running docker container WEB..."
+#             sudo docker run -d -p 3000:3000 --name web -e NEXT_PUBLIC_HTTP_URL=${{secrets.NEXT_PUBLIC_HTTP_URL}} -e NEXT_PUBLIC_WS_URL=${{secrets.NEXT_PUBLIC_WS_URL}} abhoy21/mindsketch-web:${{ github.sha }} || {
+#             echo "Error: Failed to run docker container"
+#             exit 1
+#             }
