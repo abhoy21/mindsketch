@@ -68,7 +68,7 @@ jobs:
             echo "Removing existing worker container if it exists..."
             sudo docker rm worker 2>/dev/null || true
 
-            echo "Running worker docker container..."
+            echo "Running worker docker container WORKER..."
             sudo docker run -d --name worker -e DATABASE_URL=${{secrets.DATABASE_URL}} -e REDIS_URL=${{secrets.REDIS_URL}} abhoy21/mindsketch-worker:${{ github.sha }} || {
             echo "Error: Failed to run worker container"
             exit 1
