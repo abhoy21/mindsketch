@@ -81,7 +81,23 @@ export default function Canvas({
 
         if (response.status === 200) {
           localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
           window.location.href = "/auth/signin";
+        } else if (response.status === 401) {
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/refresh`,
+            {
+              body: {
+                refreshToken: localStorage.getItem("refresh_token"),
+              },
+            }
+          );
+
+          if (response.status === 200) {
+            localStorage.setItem("access_token", response.data.accessToken);
+            localStorage.setItem("refresh_token", response.data.refreshToken);
+            handleLogout();
+          }
         }
       }
     } catch (error) {
