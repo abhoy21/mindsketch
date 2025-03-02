@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use("/", (req, res) => {
+app.use("/healthcheck", (req, res) => {
   res.send("Server running on port 8000");
 });
 
