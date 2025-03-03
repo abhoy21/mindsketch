@@ -72,6 +72,7 @@ export default function Canvas({
       if (token) {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/logout`,
+          {},
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -84,11 +85,12 @@ export default function Canvas({
           localStorage.removeItem("refresh_token");
           window.location.href = "/auth/signin";
         } else if (response.status === 401) {
+          const refreshToken = localStorage.getItem("refresh_token");
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_HTTP_URL}/api/v1/auth/refresh`,
             {
               body: {
-                refreshToken: localStorage.getItem("refresh_token"),
+                refreshToken: refreshToken,
               },
             }
           );

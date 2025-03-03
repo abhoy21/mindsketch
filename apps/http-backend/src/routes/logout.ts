@@ -7,6 +7,7 @@ const router: Router = Router();
 router.post("/logout", middleware, async (req: AuthReqProps, res: Response) => {
   try {
     const userId = req.userId;
+
     if (!userId) {
       res.status(401).send("Unauthorized");
       return;
