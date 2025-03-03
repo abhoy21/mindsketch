@@ -93,15 +93,15 @@ export default function FAQ(): React.JSX.Element {
           ))}
         </div>
 
-        <div className="mt-12 p-6 rounded-xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-amethyst-500/45">
-          <h2 className="text-3xl font-semibold mb-4 text-royal-blue-300">
+        <div className="mt-12 p-6 rounded-xl bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 border border-amethyst-500/45 text-center">
+          <h2 className="text-3xl font-semibold mb-4 bg-gradient-to-br from-amethyst-200 to-amethyst-500 bg-clip-text text-transparent">
             Still have questions?
           </h2>
           <p className="text-gray-400 text-md mb-4">
             Our support team is just a message away. We&apos;re here to help you
             make the most of MindSketch.
           </p>
-          <Button className="px-5 py-2 bg-gradient-to-r from-amethyst-600 to-royal-blue-600 rounded-md text-white font-medium hover:from-amethyst-700 hover:to-royal-blue-700 transition-all duration-200 shadow-lg hover:shadow-amethyst-900/30">
+          <Button className="px-5 py-2 bg-gradient-to-br from-amethyst-400 to-royal-blue-600 rounded-md text-white font-medium hover:from-amethyst-700 hover:to-royal-blue-700 transition-all duration-200 shadow-lg hover:shadow-amethyst-900/30">
             Contact Support
           </Button>
         </div>

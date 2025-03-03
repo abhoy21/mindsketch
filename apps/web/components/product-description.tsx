@@ -161,7 +161,7 @@ export default function ProductDescription(): React.JSX.Element {
             </p>
 
             <Link
-              href="/"
+              href="https://github.com/abhoy21/mindsketch.git"
               className="font-semibold text-lg text-amethyst-400 hover:text-amethyst-200 rounded-xl p-2 sm:p-4 flex items-center gap-2 border border-amethyst-950"
             >
               <svg
