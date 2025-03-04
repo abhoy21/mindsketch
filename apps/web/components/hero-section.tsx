@@ -1,8 +1,11 @@
 "use client";
 import Button from "@repo/ui/button";
+import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Hero(): React.JSX.Element {
+  const [videoError, setVideoError] = useState(false);
   return (
     <section className="py-16 md:py-24 min-h-screen overflow-hidden">
       <div className="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 h-full relative">
@@ -144,15 +147,29 @@ export default function Hero(): React.JSX.Element {
                   <div className="w-full h-full flex items-center justify-center text-gray-300 font-medium relative">
                     <div className="w-full h-full object-cover absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-900"></div>
 
-                    <video
-                      className="w-full h-full object-cover absolute inset-0 z-10"
-                      autoPlay
-                      playsInline
-                      muted
-                      loop
-                    >
-                      <source src="/excalidraw.mp4" type="video/mp4" />
-                    </video>
+                    {!videoError ? (
+                      <video
+                        className="w-full h-full object-cover absolute inset-0 z-10"
+                        autoPlay
+                        playsInline
+                        muted
+                        loop
+                        onError={() => setVideoError(true)}
+                      >
+                        <source src="./img/excalidraw.mp4" type="video/mp4" />
+                      </video>
+                    ) : null}
+
+                    {videoError && (
+                      <Image
+                        src="/demo-fallback.png"
+                        alt="Fallback image"
+                        fill
+                        style={{ objectFit: "cover" }}
+                        className="absolute inset-0 z-20"
+                        priority
+                      />
+                    )}
                   </div>
                 </div>
 
