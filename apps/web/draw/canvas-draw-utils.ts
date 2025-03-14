@@ -115,6 +115,7 @@ export class CanvasShapeManager {
           color,
           backgroundColor,
           lineWidth,
+          strokeStyle,
         };
 
       default:
@@ -208,6 +209,7 @@ export class CanvasShapeManager {
     }
     this.ctx.stroke();
     this.ctx.closePath();
+    this.ctx.setLineDash([]);
   }
 
   private drawLine(shape: Extract<ShapeType, { type: "line" }>) {
@@ -220,6 +222,7 @@ export class CanvasShapeManager {
     this.ctx.lineTo(shape.endX, shape.endY);
     this.ctx.stroke();
     this.ctx.closePath();
+    this.ctx.setLineDash([]);
   }
 
   private drawText(shape: Extract<ShapeType, { type: "text" }>) {
@@ -261,6 +264,7 @@ export class CanvasShapeManager {
 
     this.ctx.stroke();
     this.ctx.closePath();
+    this.ctx.setLineDash([]);
   }
 
   private drawDiamond(shape: Extract<ShapeType, { type: "diamond" }>) {
@@ -280,6 +284,7 @@ export class CanvasShapeManager {
     this.ctx.lineTo(startX, centerY);
     this.ctx.closePath();
     this.ctx.stroke();
+    this.ctx.setLineDash([]);
 
     if (shape.backgroundColor && shape.backgroundColor !== "transparent") {
       this.ctx.fillStyle = shape.backgroundColor;

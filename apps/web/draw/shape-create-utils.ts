@@ -9,7 +9,7 @@ export function createShape(
   lineWidth: number = 1,
   color: string = "#fff",
   backgroundColor: string = "transparent",
-  strokeStyle?: string
+  strokeStyle: string
 ): ShapeType | null {
   const width = endX - startX;
   const height = endY - startY;
@@ -103,7 +103,6 @@ export function createTextShape(
   startY: number,
   text: string,
   color: string = "#fff",
-  backgroundColor: string = "transparent",
   fontSize: number = 14
 ): ShapeType {
   return {
@@ -113,6 +112,5 @@ export function createTextShape(
     text,
     color,
     fontSize,
-    backgroundColor,
   };
 }

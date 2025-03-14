@@ -93,7 +93,6 @@ export type ShapeType =
       text: string;
       color: string;
       fontSize: number;
-      backgroundColor: string;
     }
   | {
       type: "arrow";
