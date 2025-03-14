@@ -226,7 +226,7 @@ export default function CanvasNavbar({
           <path d="M8.5,26.3L5,27l0.7-3.5L8.5,26.3z" />
         </svg>
       </Button>
-
+      {/* Delete */}
       <Button
         id="delete"
         variant="ghost"
@@ -235,12 +235,11 @@ export default function CanvasNavbar({
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          xmlSpace="preserve"
-          className={`${selectedTool === "Delete" ? "bg-gradient-to-br from-amethyst-500/75 to-royal-blue-500/75 text-red-400" : ""} hover:bg-[#31303b] hover:scale-105 transition-all duration-300 ease-in-out rounded-md p-2`}
-          viewBox="0 0 52 52"
           fill="#ff8383"
+          viewBox="0 0 24 24"
+          className={`${selectedTool === "Delete" ? "bg-gradient-to-br from-amethyst-500/75 to-royal-blue-500/75 text-red-400" : ""} hover:bg-[#31303b] hover:scale-105 transition-all duration-300 ease-in-out rounded-md p-2`}
         >
-          <path d="M45.5 10H33V6c0-2.2-1.8-4-4-4h-6c-2.2 0-4 1.8-4 4v4H6.5c-.8 0-1.5.7-1.5 1.5v3c0 .8.7 1.5 1.5 1.5h39c.8 0 1.5-.7 1.5-1.5v-3c0-.8-.7-1.5-1.5-1.5zM23 7c0-.6.4-1 1-1h4c.6 0 1 .4 1 1v3h-6V7zM41.5 20h-31c-.8 0-1.5.7-1.5 1.5V45c0 2.8 2.2 5 5 5h24c2.8 0 5-2.2 5-5V21.5c0-.8-.7-1.5-1.5-1.5zM23 42c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1V28c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v14zm10 0c0 .6-.4 1-1 1h-2c-.6 0-1-.4-1-1V28c0-.6.4-1 1-1h2c.6 0 1 .4 1 1v14z" />
+          <path d="M20.454 19.028h-7.01l6.62-6.63a2.935 2.935 0 0 0 .87-2.09 2.844 2.844 0 0 0-.87-2.05l-3.42-3.44a2.93 2.93 0 0 0-4.13.01L3.934 13.4a2.946 2.946 0 0 0 0 4.14l1.48 1.49h-1.86a.5.5 0 0 0 0 1h16.9a.5.5 0 0 0 0-1.002Zm-7.24-13.5a1.956 1.956 0 0 1 2.73 0l3.42 3.44a1.868 1.868 0 0 1 .57 1.35 1.93 1.93 0 0 1-.57 1.37l-5.64 5.64-6.15-6.16Zm-1.19 13.5h-5.2l-2.18-2.2a1.931 1.931 0 0 1 0-2.72l2.23-2.23 6.15 6.15Z" />
         </svg>
       </Button>
     </div>

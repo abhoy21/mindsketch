@@ -12,7 +12,9 @@ export class TextInputHandler {
     e: MouseEvent,
     startX: number,
     startY: number,
-    onShapeAdd: (shape: Extract<ShapeType, { type: "text" }>) => void
+    onShapeAdd: (shape: Extract<ShapeType, { type: "text" }>) => void,
+    strokeColor: string = "#fff",
+    fontSize: number = 14
   ) {
     this.removeTextInput();
     this.textInput = document.createElement("input");
@@ -23,8 +25,9 @@ export class TextInputHandler {
     this.textInput.style.background = "#121212";
     this.textInput.style.border = "none";
     this.textInput.style.outline = "none";
-    this.textInput.style.color = "white";
-    this.textInput.style.caretColor = "white";
+    this.textInput.style.color = strokeColor;
+    this.textInput.style.caretColor = strokeColor;
+    this.textInput.style.fontSize = `${fontSize}px`;
     this.textInput.autofocus = true;
     this.textInput.placeholder = "Type your text here";
 
@@ -36,8 +39,8 @@ export class TextInputHandler {
           startX,
           startY,
           text,
-          color: "#fff",
-          fontSize: 14,
+          color: strokeColor,
+          fontSize: fontSize,
         };
 
         onShapeAdd(textShape);

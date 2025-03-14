@@ -62,6 +62,9 @@ export type ShapeType =
       width: number;
       height: number;
       color: string;
+      backgroundColor: string;
+      lineWidth: number;
+      strokeStyle: string;
     }
   | {
       type: "circle";
@@ -69,6 +72,9 @@ export type ShapeType =
       centerY: number;
       radius: number;
       color: string;
+      backgroundColor: string;
+      lineWidth: number;
+      strokeStyle: string;
     }
   | {
       type: "line";
@@ -77,6 +83,8 @@ export type ShapeType =
       endX: number;
       endY: number;
       color: string;
+      lineWidth: number;
+      strokeStyle: string;
     }
   | {
       type: "text";
@@ -85,6 +93,7 @@ export type ShapeType =
       text: string;
       color: string;
       fontSize: number;
+      backgroundColor: string;
     }
   | {
       type: "arrow";
@@ -93,6 +102,8 @@ export type ShapeType =
       endX: number;
       endY: number;
       color: string;
+      lineWidth: number;
+      strokeStyle: string;
     }
   | {
       type: "diamond";
@@ -101,6 +112,9 @@ export type ShapeType =
       width: number;
       height: number;
       color: string;
+      backgroundColor: string;
+      lineWidth: number;
+      strokeStyle: string;
     }
   | {
       type: "pencil";
@@ -109,7 +123,6 @@ export type ShapeType =
         y: number;
         lineWidth: number;
       }>;
-
       color: string;
     }
   | { type: "none" };

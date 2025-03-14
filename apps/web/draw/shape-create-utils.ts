@@ -5,7 +5,11 @@ export function createShape(
   startX: number,
   startY: number,
   endX: number,
-  endY: number
+  endY: number,
+  lineWidth: number = 1,
+  color: string = "#fff",
+  backgroundColor: string = "transparent",
+  strokeStyle?: string
 ): ShapeType | null {
   const width = endX - startX;
   const height = endY - startY;
@@ -18,7 +22,10 @@ export function createShape(
         startY,
         width,
         height,
-        color: "#fff",
+        color,
+        backgroundColor,
+        lineWidth,
+        strokeStyle,
       };
 
     case SelectedTool.Ellipse:
@@ -28,7 +35,10 @@ export function createShape(
         centerX: startX + radius,
         centerY: startY + radius,
         radius,
-        color: "#fff",
+        color,
+        backgroundColor,
+        lineWidth,
+        strokeStyle,
       };
 
     case SelectedTool.Line:
@@ -38,7 +48,9 @@ export function createShape(
         startY,
         endX,
         endY,
-        color: "#fff",
+        color,
+        lineWidth,
+        strokeStyle,
       };
 
     case SelectedTool.Arrow:
@@ -48,7 +60,9 @@ export function createShape(
         startY,
         endX,
         endY,
-        color: "#fff",
+        color,
+        lineWidth,
+        strokeStyle,
       };
 
     case SelectedTool.Diamond:
@@ -58,7 +72,10 @@ export function createShape(
         startY,
         width,
         height,
-        color: "#fff",
+        color,
+        backgroundColor,
+        lineWidth,
+        strokeStyle,
       };
 
     default:
@@ -71,11 +88,31 @@ export function createPencilShape(
     x: number;
     y: number;
     lineWidth: number;
-  }>
+  }>,
+  color: string = "#fff"
 ): ShapeType {
   return {
     type: "pencil",
     points: Array.from(points),
-    color: "#fff",
+    color,
+  };
+}
+
+export function createTextShape(
+  startX: number,
+  startY: number,
+  text: string,
+  color: string = "#fff",
+  backgroundColor: string = "transparent",
+  fontSize: number = 14
+): ShapeType {
+  return {
+    type: "text",
+    startX,
+    startY,
+    text,
+    color,
+    fontSize,
+    backgroundColor,
   };
 }

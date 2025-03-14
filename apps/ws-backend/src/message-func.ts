@@ -11,7 +11,6 @@ export async function handleJoin(
   userManager: UserManager
 ) {
   try {
-    console.log(roomId);
     const user = userManager.findUserByWS(ws);
 
     if (!user) {
@@ -26,13 +25,33 @@ export async function handleJoin(
     });
 
     if (!existingRoom) {
-      console.log(existingRoom);
-      console.log("no such rooms exist");
+      console.log("No such room exists");
+      ws.send(
+        JSON.stringify({
+          type: "error",
+          message: "Room not found",
+          code: "ROOM_NOT_FOUND",
+        })
+      );
       return;
     }
     userManager.addUserToRoom(roomId.id, userId, ws);
+
+    ws.send(
+      JSON.stringify({
+        type: "joined",
+        roomId: roomId.id,
+      })
+    );
   } catch (error) {
     console.log(error);
+    ws.send(
+      JSON.stringify({
+        type: "error",
+        message: "Failed to join room",
+        code: "JOIN_FAILED",
+      })
+    );
   }
 }
 

@@ -7,6 +7,7 @@ import CanvasShare from "./canvas-share";
 import AIModal from "./ai-modal";
 import ZoomBar from "./zoom-bar";
 import axios from "axios";
+import DrawOptions from "./draw-options";
 
 export default function Canvas({
   roomId,
@@ -20,11 +21,17 @@ export default function Canvas({
   const [selectedTool, setSelectedTool] = useState<SelectedTool>(
     SelectedTool.Pointer
   );
+  const [strokeColor, setStrokeColor] = useState<string>("#a7a7ac");
+  const [bgColor, setBgColor] = useState<string>("#121212");
+  const [strokeWidth, setStrokeWidth] = useState<number>(1);
+  const [strokeStyle, setStrokeStyle] = useState<string>("solid");
 
+  const [fontSize, setFontSize] = useState<string>("medium");
   const [game, setGame] = useState<Game>();
   const [showModal, setShowModal] = useState(false);
   const [aiModal, setAiModal] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const [showDrawOptions, setShowDrawOptions] = useState(false);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -65,6 +72,16 @@ export default function Canvas({
       game.onScaleChange = handleScaleChange;
     }
   }, [game]);
+
+  useEffect(() => {
+    if (game) {
+      game.setStrokeColor(strokeColor);
+      game.setBgColor(bgColor);
+      game.setStrokeWidth(strokeWidth);
+      game.setFontSize(fontSize);
+      game.setStrokeStyle(strokeStyle);
+    }
+  }, [strokeColor, bgColor, strokeWidth, fontSize, strokeStyle, game]);
 
   const handleLogout = async () => {
     const token = localStorage.getItem("access_token");
@@ -116,6 +133,26 @@ export default function Canvas({
         height={canvasHeight}
       ></canvas>
 
+      <div className="fixed top-3 left-5 bg-[#232329] max-w-md mx-auto rounded-xl ">
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => setShowDrawOptions(!showDrawOptions)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#a7a7ac"
+            viewBox="0 0 24 24"
+            className="m-2"
+          >
+            <path
+              fill="#a7a7ac"
+              d="M21 7.75H3c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h18c.41 0 .75.34.75.75s-.34.75-.75.75ZM21 12.75H3c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h18c.41 0 .75.34.75.75s-.34.75-.75.75ZM21 17.75H3c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h18c.41 0 .75.34.75.75s-.34.75-.75.75Z"
+            />
+          </svg>
+        </Button>
+      </div>
+
       <div className="fixed top-2 left-0 right-0 bg-[#232329] max-w-md mx-auto rounded-xl ">
         <CanvasNavbar
           selectedTool={selectedTool}
@@ -165,6 +202,23 @@ export default function Canvas({
       {aiModal && (
         <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-black bg-opacity-50">
           <AIModal setAiModal={setAiModal} />
+        </div>
+      )}
+
+      {showDrawOptions && (
+        <div className="fixed inset-0 top-16 pl-4 w-56">
+          <DrawOptions
+            strokeColor={strokeColor}
+            setStrokeColor={setStrokeColor}
+            bgColor={bgColor}
+            setBgColor={setBgColor}
+            strokeWidth={strokeWidth}
+            setStrokeWidth={setStrokeWidth}
+            strokeStyle={strokeStyle}
+            setStrokeStyle={setStrokeStyle}
+            fontSize={fontSize}
+            setFontSize={setFontSize}
+          />
         </div>
       )}
     </>

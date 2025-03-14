@@ -9,7 +9,10 @@ export class CanvasShapeManager {
     startY: number,
     endX: number,
     endY: number,
-    color: string = "#fff"
+    lineWidth: number = 1,
+    color: string = "#fff",
+    backgroundColor: string = "transparent",
+    strokeStyle: string
   ): ShapeType | null {
     const shape = this.createShape(
       selectedTool,
@@ -17,7 +20,10 @@ export class CanvasShapeManager {
       startY,
       endX,
       endY,
-      color
+      lineWidth,
+      color,
+      backgroundColor,
+      strokeStyle
     );
     if (shape) {
       this.drawShape(shape);
@@ -40,7 +46,10 @@ export class CanvasShapeManager {
     startY: number,
     endX: number,
     endY: number,
-    color: string
+    lineWidth: number = 1,
+    color: string,
+    backgroundColor: string = "transparent",
+    strokeStyle: string
   ): ShapeType | null {
     const width = endX - startX;
     const height = endY - startY;
@@ -54,17 +63,23 @@ export class CanvasShapeManager {
           width,
           height,
           color,
+          backgroundColor,
+          lineWidth,
+          strokeStyle,
         };
 
-      case SelectedTool.Ellipse:
-        const radius = Math.max(width, height) / 2;
+      case SelectedTool.Ellipse: {
         return {
           type: "circle",
-          centerX: startX + radius,
-          centerY: startY + radius,
-          radius,
+          centerX: startX + width / 2,
+          centerY: startY + height / 2,
+          radius: Math.min(width, height) / 2,
           color,
+          backgroundColor,
+          lineWidth,
+          strokeStyle,
         };
+      }
 
       case SelectedTool.Line:
         return {
@@ -74,6 +89,8 @@ export class CanvasShapeManager {
           endX,
           endY,
           color,
+          lineWidth,
+          strokeStyle,
         };
 
       case SelectedTool.Arrow:
@@ -84,6 +101,8 @@ export class CanvasShapeManager {
           endX,
           endY,
           color,
+          lineWidth,
+          strokeStyle,
         };
 
       case SelectedTool.Diamond:
@@ -94,6 +113,8 @@ export class CanvasShapeManager {
           width,
           height,
           color,
+          backgroundColor,
+          lineWidth,
         };
 
       default:
@@ -110,6 +131,21 @@ export class CanvasShapeManager {
       points: Array.from(points),
       color,
     };
+  }
+
+  private setStrokeStyle(style: string): void {
+    switch (style) {
+      case "dashed":
+        this.ctx.setLineDash([10, 5]);
+        break;
+      case "dotted":
+        this.ctx.setLineDash([2, 3]);
+        break;
+      case "solid":
+      default:
+        this.ctx.setLineDash([]);
+        break;
+    }
   }
 
   drawShape(shape: ShapeType): void {
@@ -140,7 +176,17 @@ export class CanvasShapeManager {
 
   private drawRect(shape: Extract<ShapeType, { type: "rect" }>) {
     this.ctx.strokeStyle = shape.color;
+    this.ctx.lineWidth = shape.lineWidth || 1;
+    if (shape.strokeStyle) {
+      this.setStrokeStyle(shape.strokeStyle);
+    }
+    if (shape.backgroundColor && shape.backgroundColor !== "transparent") {
+      this.ctx.fillStyle = shape.backgroundColor;
+      this.ctx.fillRect(shape.startX, shape.startY, shape.width, shape.height);
+    }
+
     this.ctx.strokeRect(shape.startX, shape.startY, shape.width, shape.height);
+    this.ctx.setLineDash([]);
   }
 
   private drawCircle(shape: Extract<ShapeType, { type: "circle" }>) {
@@ -153,6 +199,13 @@ export class CanvasShapeManager {
       0,
       Math.PI * 2
     );
+    if (shape.backgroundColor && shape.backgroundColor !== "transparent") {
+      this.ctx.fillStyle = shape.backgroundColor;
+      this.ctx.fill();
+    }
+    if (shape.strokeStyle) {
+      this.setStrokeStyle(shape.strokeStyle);
+    }
     this.ctx.stroke();
     this.ctx.closePath();
   }
@@ -160,6 +213,9 @@ export class CanvasShapeManager {
   private drawLine(shape: Extract<ShapeType, { type: "line" }>) {
     this.ctx.strokeStyle = shape.color;
     this.ctx.beginPath();
+    if (shape.strokeStyle) {
+      this.setStrokeStyle(shape.strokeStyle);
+    }
     this.ctx.moveTo(shape.startX, shape.startY);
     this.ctx.lineTo(shape.endX, shape.endY);
     this.ctx.stroke();
@@ -168,7 +224,8 @@ export class CanvasShapeManager {
 
   private drawText(shape: Extract<ShapeType, { type: "text" }>) {
     this.ctx.fillStyle = shape.color;
-    this.ctx.font = `${shape.fontSize}px Arial`;
+    const fontSize = shape.fontSize || 14;
+    this.ctx.font = `${fontSize}px Arial`;
     this.ctx.fillText(shape.text, shape.startX, shape.startY);
   }
 
@@ -192,6 +249,9 @@ export class CanvasShapeManager {
     const arrowSize = Math.min(length * 0.1, 10);
 
     this.ctx.beginPath();
+    if (shape.strokeStyle) {
+      this.setStrokeStyle(shape.strokeStyle);
+    }
     this.ctx.moveTo(startX, startY);
     this.ctx.lineTo(endX, endY);
 
@@ -204,16 +264,27 @@ export class CanvasShapeManager {
   }
 
   private drawDiamond(shape: Extract<ShapeType, { type: "diamond" }>) {
-    const { startX: x, startY: y, width, height, color } = shape;
+    const { startX, startY, width, height, color } = shape;
 
     this.ctx.strokeStyle = color;
     this.ctx.beginPath();
-    this.ctx.moveTo(x, y - height / 2);
-    this.ctx.lineTo(x + width / 2, y);
-    this.ctx.lineTo(x, y + height / 2);
-    this.ctx.lineTo(x - width / 2, y);
+    if (shape.strokeStyle) {
+      this.setStrokeStyle(shape.strokeStyle);
+    }
+    const centerX = startX + width / 2;
+    const centerY = startY + height / 2;
+
+    this.ctx.moveTo(centerX, startY);
+    this.ctx.lineTo(startX + width, centerY);
+    this.ctx.lineTo(centerX, startY + height);
+    this.ctx.lineTo(startX, centerY);
     this.ctx.closePath();
     this.ctx.stroke();
+
+    if (shape.backgroundColor && shape.backgroundColor !== "transparent") {
+      this.ctx.fillStyle = shape.backgroundColor;
+      this.ctx.fill();
+    }
   }
 
   private drawPencil(shape: Extract<ShapeType, { type: "pencil" }>) {

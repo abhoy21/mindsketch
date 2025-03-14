@@ -156,7 +156,7 @@ export default function Hero(): React.JSX.Element {
                         loop
                         onError={() => setVideoError(true)}
                       >
-                        <source src="./img/excalidraw.mp4" type="video/mp4" />
+                        <source src="/excalidraw.mp4" type="video/mp4" />
                       </video>
                     ) : null}
 

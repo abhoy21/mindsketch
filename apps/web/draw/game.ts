@@ -30,6 +30,11 @@ export class Game {
   private textInputHandler: TextInputHandler;
   private canvasShapeManager: CanvasShapeManager;
   onScaleChange?: (scale: number) => void;
+  private strokeColor: string = "#a7a7ac";
+  private bgColor: string = "transparent";
+  private strokeWidth: number = 1;
+  private fontSize: number = 14;
+  private strokeStyle: string = "solid";
 
   constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
     this.canvas = canvas;
@@ -46,6 +51,7 @@ export class Game {
     this.initHandlers();
     this.initMouseHandlers();
     this.textInputHandler = new TextInputHandler(socket, roomId);
+    this.bgColor = "transparent";
   }
 
   destroy() {
@@ -128,6 +134,41 @@ export class Game {
     };
   }
 
+  setStrokeColor(color: string) {
+    this.strokeColor = color;
+  }
+
+  setBgColor(color: string) {
+    this.bgColor = color;
+  }
+
+  setStrokeWidth(width: number) {
+    this.strokeWidth = width;
+  }
+
+  setFontSize(size: string) {
+    switch (size) {
+      case "small":
+        this.fontSize = 12;
+        break;
+      case "medium":
+        this.fontSize = 14;
+        break;
+      case "large":
+        this.fontSize = 20;
+        break;
+      case "xlarge":
+        this.fontSize = 28;
+        break;
+      default:
+        this.fontSize = 14;
+    }
+  }
+
+  setStrokeStyle(style: string) {
+    this.strokeStyle = style;
+  }
+
   sendDeleteShape() {
     if (this.selectedShape) {
       this.existingShapes = this.existingShapes.filter(
@@ -161,6 +202,11 @@ export class Game {
       this.existingShapes.forEach((shape) => {
         this.canvasShapeManager.drawShape(shape);
       });
+    }
+
+    if (this.selectedShape && this.selectedTool === "Pointer") {
+      const bounds = this.getSelectionBounds(this.selectedShape);
+      this.drawSelectionBox(bounds.x, bounds.y, bounds.width, bounds.height);
     }
   }
 
@@ -210,13 +256,15 @@ export class Game {
           y <= shape.startY + shape.height
         );
 
-      case "text":
+      case "text": {
+        const textHeight = shape.fontSize || this.fontSize;
         return (
           x >= shape.startX &&
           x <= shape.startX + this.textLength(shape.text) &&
-          y >= shape.startY - 14 &&
+          y >= shape.startY - textHeight &&
           y <= shape.startY
         );
+      }
 
       case "pencil":
         if (!shape.points.length) return false;
@@ -230,6 +278,119 @@ export class Game {
 
       default:
         return false;
+    }
+  }
+
+  drawSelectionBox(x: number, y: number, width: number, height: number) {
+    this.ctx.save();
+
+    this.ctx.strokeStyle = "#6082B6";
+    this.ctx.lineWidth = 2;
+    this.ctx.setLineDash([5, 3]); // Optional: adds dashed line effect
+    this.ctx.strokeRect(x, y, width, height);
+    this.ctx.setLineDash([]);
+
+    const handleRadius = 4;
+    this.ctx.fillStyle = "#a85fed";
+    this.ctx.strokeStyle = "#6082B6";
+    this.ctx.lineWidth = 1;
+
+    const drawHandle = (handleX: number, handleY: number) => {
+      this.ctx.beginPath();
+      this.ctx.arc(handleX, handleY, handleRadius, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.ctx.stroke();
+    };
+
+    drawHandle(x, y);
+    drawHandle(x + width, y);
+    drawHandle(x, y + height);
+    drawHandle(x + width, y + height);
+
+    drawHandle(x + width / 2, y);
+    drawHandle(x + width, y + height / 2);
+    drawHandle(x + width / 2, y + height);
+    drawHandle(x, y + height / 2);
+
+    this.ctx.restore();
+  }
+
+  private getSelectionBounds(shape: ShapeType): {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } {
+    switch (shape.type) {
+      case "rect":
+        return {
+          x: shape.startX,
+          y: shape.startY,
+          width: shape.width,
+          height: shape.height,
+        };
+      case "circle":
+        return {
+          x: shape.centerX - shape.radius,
+          y: shape.centerY - shape.radius,
+          width: shape.radius * 2,
+          height: shape.radius * 2,
+        };
+      case "line":
+      case "arrow": {
+        const minX = Math.min(shape.startX, shape.endX);
+        const minY = Math.min(shape.startY, shape.endY);
+
+        const width = Math.abs(shape.endX - shape.startX) + 20;
+        const height = Math.abs(shape.endY - shape.startY) + 20;
+
+        return {
+          x: minX,
+          y: minY,
+          width: width,
+          height: height,
+        };
+      }
+      case "diamond":
+        return {
+          x: shape.startX,
+          y: shape.startY,
+          width: shape.width,
+          height: shape.height,
+        };
+      case "text": {
+        const textHeight = shape.fontSize || this.fontSize;
+        return {
+          x: shape.startX,
+          y: shape.startY - textHeight,
+          width: this.textLength(shape.text),
+          height: textHeight,
+        };
+      }
+      case "pencil": {
+        if (!shape.points.length) return { x: 0, y: 0, width: 0, height: 0 };
+
+        let minPencilX = shape.points[0]?.x || 0;
+        let minPencilY = shape.points[0]?.y || 0;
+        let maxPencilX = shape.points[0]?.x || 0;
+        let maxPencilY = shape.points[0]?.y || 0;
+
+        for (const point of shape.points) {
+          minPencilX = Math.min(minPencilX, point.x);
+          minPencilY = Math.min(minPencilY, point.y);
+          maxPencilX = Math.max(maxPencilX, point.x);
+          maxPencilY = Math.max(maxPencilY, point.y);
+        }
+
+        return {
+          x: minPencilX,
+          y: minPencilY,
+          width: maxPencilX - minPencilX,
+          height: maxPencilY - minPencilY,
+        };
+      }
+      default:
+        return { x: 0, y: 0, width: 0, height: 0 };
     }
   }
 
@@ -362,10 +523,12 @@ export class Game {
         e,
         this.startX,
         this.startY,
-        (shape) => {
+        (shape: Extract<ShapeType, { type: "text" }>) => {
           this.existingShapes.push(shape);
           this.displayCanvas();
-        }
+        },
+        this.strokeColor,
+        this.fontSize
       );
     }
 
@@ -390,7 +553,7 @@ export class Game {
     if (this.selectedTool === SelectedTool.Pencil) {
       const shape = this.canvasShapeManager.createPencilShape(
         this.points,
-        "#fff"
+        this.strokeColor
       );
 
       if (shape) {
@@ -428,7 +591,11 @@ export class Game {
         this.startX,
         this.startY,
         endX,
-        endY
+        endY,
+        this.strokeWidth,
+        this.strokeColor,
+        this.bgColor,
+        this.strokeStyle
       );
 
       if (shape) {
@@ -486,7 +653,10 @@ export class Game {
             startY: this.startY,
             width: endX - this.startX,
             height: endY - this.startY,
-            color: "#fff",
+            color: this.strokeColor,
+            backgroundColor: this.bgColor,
+            lineWidth: this.strokeWidth,
+            strokeStyle: this.strokeStyle,
           });
           break;
         case SelectedTool.Ellipse:
@@ -499,7 +669,10 @@ export class Game {
                 Math.abs(endX - this.startX),
                 Math.abs(endY - this.startY)
               ) / 2,
-            color: "#fff",
+            color: this.strokeColor,
+            backgroundColor: this.bgColor,
+            lineWidth: this.strokeWidth,
+            strokeStyle: this.strokeStyle,
           });
           break;
         case SelectedTool.Line:
@@ -509,7 +682,9 @@ export class Game {
             startY: this.startY,
             endX: endX,
             endY: endY,
-            color: "#fff",
+            color: this.strokeColor,
+            lineWidth: this.strokeWidth,
+            strokeStyle: this.strokeStyle,
           });
           break;
         case SelectedTool.Arrow:
@@ -519,7 +694,9 @@ export class Game {
             startY: this.startY,
             endX: endX,
             endY: endY,
-            color: "#fff",
+            color: this.strokeColor,
+            lineWidth: this.strokeWidth,
+            strokeStyle: this.strokeStyle,
           });
           break;
         case SelectedTool.Diamond:
@@ -529,7 +706,10 @@ export class Game {
             startY: this.startY,
             width: endX - this.startX,
             height: endY - this.startY,
-            color: "#fff",
+            color: this.strokeColor,
+            backgroundColor: this.bgColor,
+            lineWidth: this.strokeWidth,
+            strokeStyle: this.strokeStyle,
           });
           break;
         case SelectedTool.Pencil:
@@ -540,7 +720,7 @@ export class Game {
           this.canvasShapeManager.drawShape({
             type: "pencil",
             points: this.points,
-            color: "#fff",
+            color: this.strokeColor,
           });
           break;
       }
