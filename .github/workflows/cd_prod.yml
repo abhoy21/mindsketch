@@ -21,5 +21,8 @@ jobs:
             cd mindsketch
             git pull
             pnpm install
+            cd packages/db
+            npx prisma migrate
+            cd ../../
             pnpm run build
             pm2 restart all
