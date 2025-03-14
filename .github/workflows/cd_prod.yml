@@ -22,7 +22,7 @@ jobs:
             git pull
             pnpm install
             cd packages/db
-            npx prisma migrate
+            npx prisma generate
             cd ../../
             pnpm run build
             pm2 restart all
