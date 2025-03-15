@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Canvas from "./canvas";
+import Button from "@repo/ui/button";
 
 export function RoomCanvas({ roomId }: { roomId: string }): React.JSX.Element {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -59,7 +60,7 @@ export function RoomCanvas({ roomId }: { roomId: string }): React.JSX.Element {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-[#121212]">
         <div className="text-center p-6 bg-red-50 rounded-lg border border-red-200">
           <h2 className="text-xl font-semibold text-red-700 mb-2">Error</h2>
           <p className="text-red-600">{error}</p>
@@ -70,7 +71,16 @@ export function RoomCanvas({ roomId }: { roomId: string }): React.JSX.Element {
   }
 
   if (!socket) {
-    return <div>Connecting to server....</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center p-6 bg-[#121212] rounded-lg border border-amethyst-950 shadow-md">
+          <p className="text-gray-500 mt-4 text-sm">Room ID: {roomId}</p>
+          <Button size="sm" onClick={() => router.push("/room/join")}>
+            Back to Rooms
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -44,10 +44,15 @@ export class UserManager {
   }
 
   removeUser(roomId: number, userId: string, ws: WebSocket) {
-    this.users.filter((u) => u.userId !== userId && u.ws !== ws);
-    this.RoomUserMap.get(roomId)!.filter(
-      (u) => u.userId !== userId && u.ws !== ws
-    );
+    this.users = this.users.filter((u) => u.userId !== userId || u.ws !== ws);
+    if (this.RoomUserMap.has(roomId)) {
+      this.RoomUserMap.set(
+        roomId,
+        this.RoomUserMap.get(roomId)!.filter(
+          (u) => u.userId !== userId || u.ws !== ws
+        )
+      );
+    }
   }
 
   findUserByWS(ws: WebSocket): User | undefined {
