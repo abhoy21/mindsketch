@@ -1,27 +1,16 @@
-server {
-    listen 80;
+#!/bin/bash
 
-    location /api/ {
-        proxy_pass http://localhost:8000/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-    }
+# Start Redis
+redis-server &
 
-    location /ws/ {
-        proxy_pass http://localhost:8080/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-    }
+# Start your backend HTTP server (adjust path if needed)
+python3 path/to/http_server.py &
 
-    location / {
-        proxy_pass http://localhost:3000/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host $host;
-    }
-}
+# Start your WebSocket server (adjust path if needed)
+python3 path/to/ws_server.py &
+
+# Start your web frontend (adjust if it’s Next.js or something else)
+npm run start &
+
+# Start Nginx in the foreground
+nginx -g "daemon off;"
