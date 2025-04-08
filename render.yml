@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: my-app
+    env: docker
+    dockerfilePath: ./docker-compose.prod.yml
+    dockerCommand: docker-compose -f docker-compose.prod.yml up
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRES_IN
+        value: "3600"
+      - key: REFRESH_TOKEN_EXPIRES_IN
+        value: "604800"
+      - key: NEXT_PUBLIC_HTTP_URL
+        value: "https://${RENDER_EXTERNAL_HOSTNAME}"
+      - key: NEXT_PUBLIC_WS_URL
+        value: "wss://${RENDER_EXTERNAL_HOSTNAME}"
