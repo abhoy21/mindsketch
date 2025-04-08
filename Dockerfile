@@ -1,21 +1,22 @@
-# Use a minimal base image with bash, Docker, and Redis support
-FROM docker:dind
+# Base image
+FROM node:18
 
-# Install Redis, Node.js, and Python (or your project stack needs)
-RUN apk add --no-cache \
-    bash \
-    redis \
-    docker-cli \
-    nodejs \
-    npm \
-    python3 \
-    py3-pip \
-    git
+# Install dependencies: Redis, Python, Nginx
+RUN apt-get update && apt-get install -y \
+    redis-server \
+    python3 python3-pip \
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
 
+# Copy project files
 WORKDIR /app
 COPY . .
 
-# Make sure the start script is executable
+# Copy Nginx config
+COPY ./nginx/default.conf /etc/nginx/sites-available/default
+
+# Make the start script executable
 RUN chmod +x scripts/start.sh
 
+EXPOSE 80
 CMD ["scripts/start.sh"]
