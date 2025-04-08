@@ -1,21 +1,85 @@
 services:
   - type: web
-    name: my-app
+    name: web
     env: docker
-    dockerfilePath: ./docker-compose.prod.yml
-    dockerCommand: docker-compose -f docker-compose.prod.yml up
+    dockerfilePath: docker/Dockerfile.web
+    envVars:
+      - key: NEXT_PUBLIC_HTTP_URL
+        fromService:
+          name: http-server
+          type: web
+      - key: NEXT_PUBLIC_WS_URL
+        fromService:
+          name: ws-server
+          type: web
+    port: 3000
+    healthCheckPath: /
+
+  - type: web
+    name: http-server
+    env: docker
+    dockerfilePath: docker/Dockerfile.http-server
     envVars:
       - key: DATABASE_URL
-        sync: false
+        fromService:
+          name: postgres
+          type: postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: redis
+          type: redis
+          property: connectionString
       - key: JWT_SECRET
-        sync: false
       - key: GEMINI_API_KEY
-        sync: false
       - key: ACCESS_TOKEN_EXPIRES_IN
-        value: "3600"
       - key: REFRESH_TOKEN_EXPIRES_IN
-        value: "604800"
-      - key: NEXT_PUBLIC_HTTP_URL
-        value: "https://${RENDER_EXTERNAL_HOSTNAME}"
-      - key: NEXT_PUBLIC_WS_URL
-        value: "wss://${RENDER_EXTERNAL_HOSTNAME}"
+    port: 8000
+    healthCheckPath: /
+
+  - type: web
+    name: ws-server
+    env: docker
+    dockerfilePath: docker/Dockerfile.ws-server
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          name: postgres
+          type: postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: redis
+          type: redis
+          property: connectionString
+      - key: JWT_SECRET
+      - key: GEMINI_API_KEY
+      - key: ACCESS_TOKEN_EXPIRES_IN
+      - key: REFRESH_TOKEN_EXPIRES_IN
+    port: 8080
+    healthCheckPath: /
+
+  - type: worker
+    name: worker
+    env: docker
+    dockerfilePath: docker/Dockerfile.worker
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          name: postgres
+          type: postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: redis
+          type: redis
+          property: connectionString
+
+databases:
+  - name: postgres
+    databaseName: neondb
+    user: neondb_owner
+
+redis:
+  - name: redis
+    plan: free
