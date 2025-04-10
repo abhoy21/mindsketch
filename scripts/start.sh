@@ -1,16 +1,25 @@
 #!/bin/bash
 
-# Start Redis
+echo "Starting Redis..."
 redis-server &
 
-# Start your backend HTTP server (adjust path if needed)
-python3 path/to/http_server.py &
-
-# Start your WebSocket server (adjust path if needed)
-python3 path/to/ws_server.py &
-
-# Start your web frontend (adjust if it’s Next.js or something else)
+echo "Starting HTTP server..."
+cd apps/api
+npm install
+npm run build
 npm run start &
 
-# Start Nginx in the foreground
+echo "Starting WS server..."
+cd ../ws
+npm install
+npm run build
+npm run start &
+
+echo "Starting Web frontend..."
+cd ../web
+npm install
+npm run build
+npm run start &
+
+echo "Starting Nginx..."
 nginx -g "daemon off;"
